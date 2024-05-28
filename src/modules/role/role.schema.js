@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
 const roleSchema = new mongoose.Schema({
     name: {
@@ -7,8 +8,8 @@ const roleSchema = new mongoose.Schema({
         unique: true
     },
     permissions: [{
-        type: String,
-        required: true
+        type: Schema.Types.ObjectId,
+        ref: 'Permission'
     }]
 }, { timestamps: true }); //permite agregar marcas de timpo 
 const Role = mongoose.model('Role', roleSchema);

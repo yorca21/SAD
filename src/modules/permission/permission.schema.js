@@ -1,5 +1,6 @@
 
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
 const permissionSchema = new mongoose.Schema({
     name: {

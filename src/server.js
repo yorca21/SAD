@@ -1,20 +1,23 @@
 const express = require('express')
-const { hola } = require('./modules/user/user.controller')
+const { initDB }= require('./config/db/mongo')
 
 class ExpressServer {
     constructor() {
         this.port = 3000
         this.app = express()
         this.routes()
+        this.initmongoDB()
     }
-
+    async initmongoDB(){
+        await initDB();
+    }
     routes() {
         this.app.use('/user', require('./modules/user/user.router'))
     }
 
     listen() {
         this.app.listen(this.port, () => {
-            console.log(`Example app listening on port ${this.port}`)
+            console.log(`El puerto de coneccion es: ${this.port}`)
         })
     }
 }
