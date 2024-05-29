@@ -22,7 +22,7 @@ const findUserById = async (userId) => {
     }
 };
 
-// Función para encontrar usuarios por ciertos criterios
+// Función para encontrar usuarios por ciertos criterios, dependiendo al criterio la busqueda pueder por nombre correo, etc.
 const findUsers = async (criteria) => {
     try {
         const users = await User.find(criteria);
@@ -59,12 +59,3 @@ module.exports = {
     updateUser,
     deleteUser
 };
-
-/*const obtenerUsuarios = () => {
-    // hacer aqui la pinshi consulta ggg xDDDD
-    return usuarios
-}
-
-module.exports = {
-    obtenerUsuarios
-}*/

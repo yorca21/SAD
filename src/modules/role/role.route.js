@@ -1,19 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const Role = require('./role.schema');
+const { Router } = require('express');
+const roleController = require('./role.controller');
+const router = Router();
 
-// Creacion del rol
-router.post('/role', async (req, res) => {
-  const { name, permissions } = req.body;
+// Ruta para crear un nuevo rol
+router.post('/', roleController.createRole);
 
-  let role = new Role({ name, permissions });
+// Ruta para encontrar un rol por su ID
+router.get('/:id', roleController.findRoleById);
 
-  try {
-    await role.save();
-    res.status(201).send('Rol creado');
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
+// Ruta para encontrar roles por ciertos criterios
+router.get('/', roleController.findRoles);
+
+// Ruta para actualizar un rol
+router.put('/:id', roleController.updateRole);
+
+// Ruta para eliminar un Rol
+router.delete('/:id', roleController.deleteRole);
 
 module.exports = router;

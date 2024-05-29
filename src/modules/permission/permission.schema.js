@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const permissionSchema = new mongoose.Schema({
+const permissionSchema = new Schema({
     name: {
         type: String,
         required: true,

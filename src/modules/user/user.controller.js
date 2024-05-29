@@ -23,21 +23,39 @@ const getUserById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+// Controlador para actualizar un usuario
+const updateUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const newData = req.body;
+        const updatedUser = await UserQueries.updateUser(userId, newData);
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating user', error });
+    }
+};
 
-// Otros controladores para actualizar y eliminar usuarios pueden ser similares
+// Controlador para eliminar un usuario
+const deleteUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const result = await UserQueries.deleteUser(userId);
+        if (!result) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting user', error });
+    }
+};
 
 module.exports = {
     createUser,
-    getUserById
-    // Otros controladores aquí
+    getUserById,
+    updateUser,
+    deleteUser
 };
 
-/*const { obtenerUsuarios } = require("./user.queries")
-const User = require("./user.schema")
-const getUsers = async (req, res) => {
-    const users = await obtenerUsuarios()
-    return res.status(200).json(users)
-}
-module.exports = {
-     getUsers
-}*/
