@@ -1,6 +1,6 @@
 const PermissionQueries = require('./permission.queries');
 
-// Controlador para crear un nueva permiso
+// Controlador para crear un nuevo permiso
 const createPermission = async (req, res) => {
     try {
         const permissionData = req.body;
@@ -29,7 +29,7 @@ const findPermissionById = async (req, res) => {
 const findPermissions = async (req, res) => {
     try {
         const criteria = req.query;
-        const permissions = await PermissionQueries.findPerpermissions(criteria);
+        const permissions = await PermissionQueries.findPermissions(criteria);
         res.status(200).json(permissions);
     } catch (error) {
         res.status(500).json({ message: 'Error finding permissions', error });

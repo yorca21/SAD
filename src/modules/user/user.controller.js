@@ -23,6 +23,16 @@ const getUserById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+// Controlador para encontrar usuarios por ciertos criterios
+const findUsers = async (req, res) => {
+    try {
+        const criteria = req.query;
+        const users = await UserQueries.findUsers(criteria);
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Error finding users', error });
+    }
+};
 // Controlador para actualizar un usuario
 const updateUser = async (req, res) => {
     try {
@@ -55,6 +65,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
     createUser,
     getUserById,
+    findUsers,
     updateUser,
     deleteUser
 };

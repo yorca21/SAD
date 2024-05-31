@@ -4,7 +4,7 @@ const RoleQueries = require('./role.queries');
 const createRole = async (req, res) => {
     try {
         const roleData = req.body;
-        const newRole = await RoleQueries.createPerson(roleData);
+        const newRole = await RoleQueries.createRole(roleData);
         res.status(201).json(newRole);
     } catch (error) {
         res.status(500).json({ message: 'Error creating role', error });

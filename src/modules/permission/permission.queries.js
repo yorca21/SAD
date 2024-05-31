@@ -14,7 +14,7 @@ const createPermission = async (permissionData) => {
 // Función para encontrar un permiso por ID
 const findPermissionById = async (permissionId) => {
     try {
-        const permission = await permission.findById(permissionId).populate('permissions');
+        const permission = await Permission.findById(permissionId);
         return permission;
     } catch (error) {
         throw error;
@@ -24,7 +24,7 @@ const findPermissionById = async (permissionId) => {
 // Función para encontrar permisos por ciertos criterios
 const findPermissions = async (criteria) => {
     try {
-        const permissions = await Permission.find(criteria).populate('permissions');
+        const permissions = await Permission.find(criteria);
         return permissions;
     } catch (error) {
         throw error;
@@ -34,7 +34,7 @@ const findPermissions = async (criteria) => {
 // Función para actualizar un permiso
 const updatePermission = async (permissionId, newData) => {
     try {
-        const updatedPermission = await Permission.findByIdAndUpdate(permissionId, newData, { new: true }).populate('permissions');
+        const updatedPermission = await Permission.findByIdAndUpdate(permissionId, newData, { new: true });
         return updatedPermission;
     } catch (error) {
         throw error;

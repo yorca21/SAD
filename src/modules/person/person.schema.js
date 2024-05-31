@@ -10,12 +10,12 @@ const personSchema = new Schema({
         type: String, 
         required: true 
     },
-    CI:{
-        type: number,
+    cI:{
+        type:Number,
         require: true
     },
     phone: {
-        type: number,
+        type: Number,
         require: true
 
     },
