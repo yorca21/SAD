@@ -15,17 +15,17 @@ const createUser = async (userData) => {
 // Función para encontrar un usuario por su ID
 const findUserById = async (userId) => {
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('person').populate('unit').populate('role');
         return user;
     } catch (error) {
         throw error;
     }
 };
 
-// Función para encontrar usuarios por ciertos criterios, dependiendo al criterio la busqueda pueder por nombre correo, etc.
+// Función para encontrar usuarios por ciertos criterios
 const findUsers = async (criteria) => {
     try {
-        const users = await User.find(criteria);
+        const users = await User.find(criteria).populate('person').populate('unit').populate('role');
         return users;
     } catch (error) {
         throw error;
@@ -35,7 +35,7 @@ const findUsers = async (criteria) => {
 // Función para actualizar un usuario
 const updateUser = async (userId, newData) => {
     try {
-        const updatedUser = await User.findByIdAndUpdate(userId, newData, { new: true });
+        const updatedUser = await User.findByIdAndUpdate(userId, newData, { new: true }).populate('person').populate('unit').populate('role');
         return updatedUser;
     } catch (error) {
         throw error;

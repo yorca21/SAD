@@ -11,7 +11,7 @@ const personSchema = new Schema({
         required: true 
     },
     cI:{
-        type:Number,
+        type: Number,
         require: true
     },
     phone: {
@@ -22,11 +22,12 @@ const personSchema = new Schema({
     email: { 
         type: String, 
         required: true, 
-        unique: true 
+        unique: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address.']
     },
     address: {
         type: String,
-        default:0,
+        default:''
 
     },
     
