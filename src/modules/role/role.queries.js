@@ -14,7 +14,7 @@ const createRole = async (roleData) => {
 // Función para encontrar un rol por su ID
 const findRoleById = async (roleId) => {
     try {
-        const role = await Role.findById(roleId).populate('permissions');
+        const role = await Role.findById(roleId).populate({path: 'permission', select:'name'});
         return role;
     } catch (error) {
         throw error;

@@ -3,14 +3,14 @@ const { Schema } = mongoose;
 
 const roleSchema = new Schema({
     name: {
-        type: String,
+        type: Schema.Types.String,
         required: true,
         unique: true
     },
-    permissions: [{
+    permissions:[{
         type: Schema.Types.ObjectId,
         ref: 'Permission'
     }]
-}, { timestamps: true }); //permite agregar marcas de timpo 
+});
 const Role = mongoose.model('Role', roleSchema);
 module.exports = Role

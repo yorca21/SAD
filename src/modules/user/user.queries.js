@@ -15,7 +15,17 @@ const createUser = async (userData) => {
 // Función para encontrar un usuario por su ID
 const findUserById = async (userId) => {
     try {
-        const user = await User.findById(userId).populate('person').populate('unit').populate('role');
+        const user = await User.findById(userId).populate('person').populate('role');
+        return user;
+    } catch (error) {
+        throw error;
+    }
+};
+//funcion para encontrar un usuario por su nombre de usuario
+const findByIdUsername = async (username) => {
+    try {
+        const user = await User.findOne({ username }).populate('person').populate('role');
+        console.log(user)
         return user;
     } catch (error) {
         throw error;
@@ -55,6 +65,7 @@ const deleteUser = async (userId) => {
 module.exports = {
     createUser,
     findUserById,
+    findByIdUsername,
     findUsers,
     updateUser,
     deleteUser

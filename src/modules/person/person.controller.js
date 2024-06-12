@@ -12,7 +12,7 @@ const createPerson = async (req, res) => {
 };
 
 // Controlador para encontrar una persona por su ID
-const findPersonById = async (req, res) => {
+const findPersonById = async (req, res,) => {
     try {
         const personId = req.params.id;
         const person = await PersonQueries.findPersonById(personId);

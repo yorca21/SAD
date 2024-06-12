@@ -12,16 +12,16 @@ const createRole = async (req, res) => {
 };
 
 // Controlador para encontrarun rol por ID
-const findRoleById = async (req, res) => {
+const findRoleById = async (id) => {
     try {
-        const roleId = req.params.id;
-        const role = await RoleQueries.findRoleById(roleId);
+        const role = await RoleQueries.findRoleById(id);
         if (!role) {
-            return res.status(404).json({ message: 'Role not found' });
+            throw new Error('Role not found');
         }
-        res.status(200).json(role);
+        return role;
     } catch (error) {
-        res.status(500).json({ message: 'Error finding role', error });
+        console.error('Error finding role:', error);
+        throw error;
     }
 };
 

@@ -8,6 +8,9 @@ router.post('/', userController.createUser);
 // Ruta para encontrar un usuario por su ID
 router.get('/:id', userController.getUserById);  
 
+// Ruta para encontrar un usuario por nombre de usuario 
+router.get('/username/:username', userController.getUserByUsername);
+
 // Ruta para encontrar usuarios por ciertos criterios
 router.get('/', userController.findUsers);  
 

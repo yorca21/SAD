@@ -14,7 +14,7 @@ class ExpressServer {
     }
     routes() {
         
-        this.app.use('/auth', require('./modules/middleware/authRouters'));
+        this.app.use('/auth', require('./modules/auth/authRouters'));
         this.app.use('/user', require('./modules/user/user.router'));
         this.app.use('/person', require('./modules/person/person.router'));
         this.app.use('/role', require('./modules/role/role.route'));
@@ -27,7 +27,7 @@ class ExpressServer {
 
     listen() {
         this.app.listen(this.port, () => {
-            console.log(`El puerto de coneccion es: ${this.port}`)
+            console.log(`The connection port is: ${this.port}`)
         })
     }
 }

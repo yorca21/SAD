@@ -3,11 +3,11 @@ const { Schema } = mongoose;
 
 const personSchema = new Schema({
     firstName: { 
-        type: String, 
+        type: Schema.Types.String, 
         required: true 
     },
     lastName: { 
-        type: String, 
+        type: Schema.Types.String, 
         required: true 
     },
     cI:{
@@ -20,13 +20,13 @@ const personSchema = new Schema({
 
     },
     email: { 
-        type: String, 
+        type: Schema.Types.String, 
         required: true, 
         unique: true,
         match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address.']
     },
     address: {
-        type: String,
+        type: Schema.Types.String,
         default:''
 
     },

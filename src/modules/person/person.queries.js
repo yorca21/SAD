@@ -10,7 +10,6 @@ const createPerson = async (personData) => {
         throw error;
     }
 };
-
 // Función para encontrar una persona por su ID
 const findPersonById = async (personId) => {
     try {

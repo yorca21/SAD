@@ -1,16 +1,17 @@
 const  mongoose = require('mongoose');
 
-const MONGO_URI = `mongodb://localhost:27017/qwerty`
+const MONGO_URI = `mongodb://localhost:27017/SAD`
 const initDB = async () => {
     try {
 
         await mongoose.connect(MONGO_URI, {
+            
             useNewUrlParser: true,
-            useUnifiedTopology: true
+            useUnifiedTopology: true,
         });
-        console.log(`Conectado a MongoDB`);
+        console.log(`connected to the Mongodb`);
     } catch (error) {
-        console.error('Error al connectar con MongoDB:', error);
+        console.error('Error connecting to MongoDB:', error);
         throw error;
     }
 }

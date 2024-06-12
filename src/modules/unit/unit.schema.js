@@ -3,17 +3,14 @@ const { Schema } = mongoose;
 
 const unitSchema = new mongoose.Schema({
     name: {
-        type: String,
+        type: Schema.Types.String,
         require: true
     },
     decription:{
-        type :String,
+        type :Schema.Types.String,
         require : true
     },
-    user: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }]
+    
 })
 const Unit = mongoose.model('Unit', unitSchema);
 module.exports = Unit

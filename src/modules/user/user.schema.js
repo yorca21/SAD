@@ -4,11 +4,12 @@ const { hashPassword, comparePassword } = require('../../helpers/authUtils');
 
 const userSchema = new mongoose.Schema({
     username: { 
-        type: String, 
-        required: true 
+        type: Schema.Types.String, 
+        required: true,
+        unique: true
     },    
     password: { 
-        type: String, 
+        type: Schema.Types.String,
         required: true 
     },
     person:[{
@@ -16,10 +17,6 @@ const userSchema = new mongoose.Schema({
         ref: 'Person',
         require: true
 
-    }],
-    unit:[{
-        type: Schema.Types.ObjectId,
-        ref: 'Unit'
     }],
     role:[{
         type: Schema.Types.ObjectId,
