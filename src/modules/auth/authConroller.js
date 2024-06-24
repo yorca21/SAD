@@ -6,16 +6,24 @@ const { hashPassword, comparePassword } = require('../../helpers/authUtils');
 exports.login = async (req, res) => {
     const { username, password } = req.body;
     try {
-        const user = await User.findOne({ username }).populate('person role');
+        const user = await User.findOne({ username }).populate('person role unit');
+        
         if (!user) {
             return res.status(401).json({ message: 'Username incorrect' });
         }
-                
-        const validPassword = await user.matchPassword(password);
+       /* console.log('Entered Password:', password);
+        console.log('Hashed Password:', user.password)*/
+        const validPassword = await comparePassword(password, user.password);
+
         if (!validPassword) {
+
             return res.status(401).json({ message: 'Password incorrect' });
         }
-        const token = jwt.sign({ userId: user._id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
+        const token = jwt.sign({
+             userId: user._id, 
+             username: user.username, 
+             role: user.role 
+        }, process.env.JWT_SECRET, { expiresIn: '2h' });
         res.json({ token });
     } catch (error) {
         console.error('Authentication Error:', error);

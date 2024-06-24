@@ -15,7 +15,7 @@ const createUser = async (userData) => {
 // Función para encontrar un usuario por su ID
 const findUserById = async (userId) => {
     try {
-        const user = await User.findById(userId).populate('person').populate('role');
+        const user = await User.findById(userId).populate({path:'name', model: Person}).populate({path:'name ', model: Role}).populate({path:'name ', model: Unit});
         return user;
     } catch (error) {
         throw error;
@@ -24,7 +24,7 @@ const findUserById = async (userId) => {
 //funcion para encontrar un usuario por su nombre de usuario
 const findByIdUsername = async (username) => {
     try {
-        const user = await User.findOne({ username }).populate('person').populate('role');
+        const user = await User.findOne({ username }).populate({path:'name', model: Person}).populate({path:'name ', model: Role}).populate({path:'name ', model: Unit});
         console.log(user)
         return user;
     } catch (error) {
@@ -35,7 +35,7 @@ const findByIdUsername = async (username) => {
 // Función para encontrar usuarios por ciertos criterios
 const findUsers = async (criteria) => {
     try {
-        const users = await User.find(criteria).populate('person').populate('unit').populate('role');
+        const users = await User.find(criteria).populate({path:'name', model: Person}).populate({path:'name ', model: Role}).populate({path:'name ', model: Unit});
         return users;
     } catch (error) {
         throw error;
@@ -45,7 +45,7 @@ const findUsers = async (criteria) => {
 // Función para actualizar un usuario
 const updateUser = async (userId, newData) => {
     try {
-        const updatedUser = await User.findByIdAndUpdate(userId, newData, { new: true }).populate('person').populate('unit').populate('role');
+        const updatedUser = await User.findByIdAndUpdate(userId, newData, { new: true }).populate({path:'name', model: Person}).populate({path:'name ', model: Role}).populate({path:'name ', model: Unit});
         return updatedUser;
     } catch (error) {
         throw error;

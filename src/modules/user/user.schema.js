@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Role'
     }],
+    unit:[{
+        type:Schema.Types.ObjectId,
+        ref: "Unit"
+    }],
 })
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {

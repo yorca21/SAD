@@ -33,7 +33,7 @@ const findUnits = async (criteria) => {
 // Función para actualizar un rol
 const updateUnit = async (unitId, newData) => {
     try {
-        const updatedUnit = await Unit.findByIdAndUpdate(unitId, newData, { new: true }).populate('permissions');
+        const updatedUnit = await Unit.findByIdAndUpdate(unitId, newData, { new: true }).populate({path:'name', model: Permission });
         return updatedUnit;
     } catch (error) {
         throw error;

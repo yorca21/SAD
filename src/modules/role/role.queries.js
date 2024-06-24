@@ -24,7 +24,7 @@ const findRoleById = async (roleId) => {
 // Función para encontrar roles por ciertos criterios
 const findRoles = async (criteria) => {
     try {
-        const roles = await Role.find(criteria).populate('permissions');
+        const roles = await Role.find(criteria).populate({path :'permissions', select:'name'});
         return roles;
     } catch (error) {
         throw error;
@@ -34,7 +34,7 @@ const findRoles = async (criteria) => {
 // Función para actualizar un rol
 const updateRole = async (roleId, newData) => {
     try {
-        const updatedRole = await Role.findByIdAndUpdate(roleId, newData, { new: true }).populate('permissions');
+        const updatedRole = await Role.findByIdAndUpdate(roleId, newData, { new: true }).populate({path :'permissions', select:'name'});
         return updatedRole;
     } catch (error) {
         throw error;
