@@ -4,9 +4,19 @@ const UserQueries = require('./user.queries');
 const createUser = async (req, res) => {
     try {
         const newUser = await UserQueries.createUser(req.body);
-        res.status(201).json(newUser);
+        return res.status(201).json(newUser);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
+    }
+};
+// Controlador para obtener todos los usuarios
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await UserQueries.allUsers(req.body);
+        return res.status(201).json(users); 
+    } catch (error) {
+        console.error('Error getting users:', error);
+        return res.status(500).json({ message: 'Error getting users:' });
     }
 };
 
@@ -16,11 +26,13 @@ const getUserById = async (req, res) => {
         const userId = req.params.id;
         const user = await UserQueries.findUserById(userId);
         if (!user) {
+            
             return res.status(404).json({ error: 'User not found' });
         }
-        res.status(200).json(user);
+        return res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        
+        return res.status(500).json({ error: error.message });
     }
 };
 //controlador para obtener usuario por  su nombre de usuario 
@@ -31,9 +43,9 @@ const getUserByUsername = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        res.status(200).json(user);
+        return res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 // Controlador para encontrar usuarios por ciertos criterios
@@ -41,9 +53,9 @@ const findUsers = async (req, res) => {
     try {
         const criteria = req.query;
         const users = await UserQueries.findUsers(criteria);
-        res.status(200).json(users);
+        return res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({ message: 'Error finding users', error });
+        return res.status(500).json({ message: 'Error finding users', error });
     }
 };
 // Controlador para actualizar un usuario
@@ -55,9 +67,9 @@ const updateUser = async (req, res) => {
         if (!updatedUser) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.status(200).json(updatedUser);
+        return res.status(200).json(updatedUser);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating user', error });
+        return res.status(500).json({ message: 'Error updating user', error });
     }
 };
 
@@ -69,14 +81,15 @@ const deleteUser = async (req, res) => {
         if (!result) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.status(200).json({ message: 'User deleted successfully' });
+        return res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting user', error });
+        return res.status(500).json({ message: 'Error deleting user', error });
     }
 };
 
 module.exports = {
     createUser,
+    getAllUsers,
     getUserById,
     getUserByUsername,
     findUsers,

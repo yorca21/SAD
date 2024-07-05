@@ -23,7 +23,7 @@ const findUnitById = async (unitId) => {
 // Función para encontrar unidades por ciertos criterios
 const findUnits = async (criteria) => {
     try {
-        const units = await Unit.find(criteria).populate('permissions');
+        const units = await Unit.find(criteria.name).populate('permissions');
         return units;
     } catch (error) {
         throw error;

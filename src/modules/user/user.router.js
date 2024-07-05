@@ -5,6 +5,9 @@ const router = Router();
 // Ruta para crear un nuevo usuario
 router.post('/', userController.createUser);
 
+// Ruta para listar todos los usuarios 
+router.get('/', userController.getAllUsers);
+
 // Ruta para encontrar un usuario por su ID
 router.get('/:id', userController.getUserById);  
 

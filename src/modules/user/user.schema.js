@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema({
         type: Schema.Types.String,
         required: true 
     },
+    state:{
+        type: Schema.Types.Boolean,
+        requered: true
+    },
     person:[{
         type: Schema.Types.ObjectId,
         ref: 'Person',
@@ -21,6 +25,11 @@ const userSchema = new mongoose.Schema({
     role:[{
         type: Schema.Types.ObjectId,
         ref: 'Role'
+    }],
+    permission :[{
+        type: Schema.Types.ObjectId,
+        ref: 'Permission'
+
     }],
     unit:[{
         type:Schema.Types.ObjectId,

@@ -29,7 +29,7 @@ const findRoleById = async (id) => {
 const findRoles = async (req, res) => {
     try {
         const criteria = req.query;
-        const roles = await RoleQueries.findRoles(criteria);
+        const roles = await RoleQueries.findRoles(criteria.name);
         res.status(200).json(roles);
     } catch (error) {
         res.status(500).json({ message: 'Error finding roles', error });

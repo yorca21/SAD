@@ -24,7 +24,7 @@ const findRoleById = async (roleId) => {
 // Función para encontrar roles por ciertos criterios
 const findRoles = async (criteria) => {
     try {
-        const roles = await Role.find(criteria).populate({path :'permissions', select:'name'});
+        const roles = await Role.find(criteria.name).populate({path :'permissions', select:'name'});
         return roles;
     } catch (error) {
         throw error;

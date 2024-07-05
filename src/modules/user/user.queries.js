@@ -1,5 +1,8 @@
 //aqui van todas las consultas 
 const User = require('./user.schema');
+const Person = require('../person/person.schema');
+const Role = require('../role/role.schema');
+const Unit = require('../unit/unit.schema');
 
 // Función para crear un nuevo usuario
 const createUser = async (userData) => {
@@ -11,7 +14,15 @@ const createUser = async (userData) => {
         throw error;
     }
 };
-
+// Función para obtener todos los usuarios
+const allUsers = async () => {
+    try {
+        const users = await User.find().populate({ path: 'person', model: 'Person' }).populate({ path: 'role', model: 'Role' }).populate({ path: 'unit', model: 'Unit' });
+        return users;
+    } catch (error) {
+        throw error;
+    }
+};
 // Función para encontrar un usuario por su ID
 const findUserById = async (userId) => {
     try {
@@ -64,6 +75,7 @@ const deleteUser = async (userId) => {
 
 module.exports = {
     createUser,
+    allUsers,
     findUserById,
     findByIdUsername,
     findUsers,

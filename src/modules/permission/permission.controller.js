@@ -29,7 +29,7 @@ const findPermissionById = async (req, res) => {
 const findPermissions = async (req, res) => {
     try {
         const criteria = req.query;
-        const permissions = await PermissionQueries.findPermissions(criteria);
+        const permissions = await PermissionQueries.findPermissions(criteria.name);
         res.status(200).json(permissions);
     } catch (error) {
         res.status(500).json({ message: 'Error finding permissions', error });

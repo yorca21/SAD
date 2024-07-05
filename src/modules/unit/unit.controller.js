@@ -29,7 +29,7 @@ const findUnitById = async (req, res) => {
 const findUnits = async (req, res) => {
     try {
         const criteria = req.query;
-        const units = await UnitQueries.findUnits(criteria);
+        const units = await UnitQueries.findUnits(criteria.name);
         res.status(200).json(units);
     } catch (error) {
         res.status(500).json({ message: 'Error finding units', error });

@@ -23,13 +23,21 @@ const findPersonById = async (personId) => {
 // Función para encontrar personas por ciertos criterios
 const findPersons = async (criteria) => {
     try {
-        const persons = await Person.find(criteria);
-        return persons;
+        if (criteria.firstName && criteria.lastName) {
+            const person = await Person.findOne({
+                firstName: criteria.firstName,
+                lastName: criteria.lastName
+            });
+            return person;
+        } else {
+            
+            const person = await Person.findOne(criteria);
+            return person;
+        }
     } catch (error) {
         throw error;
     }
 };
-
 // Función para actualizar una persona
 const updatePerson = async (personId, newData) => {
     try {
