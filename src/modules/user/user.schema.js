@@ -24,16 +24,19 @@ const userSchema = new mongoose.Schema({
     }],
     role:[{
         type: Schema.Types.ObjectId,
-        ref: 'Role'
+        ref: 'Role',
+        require: true
     }],
     permission :[{
         type: Schema.Types.ObjectId,
-        ref: 'Permission'
+        ref: 'Permission',
+        require: true
 
     }],
     unit:[{
         type:Schema.Types.ObjectId,
-        ref: "Unit"
+        ref: 'Unit',
+        require: true
     }],
 })
 userSchema.pre('save', async function(next) {

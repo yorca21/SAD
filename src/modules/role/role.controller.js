@@ -5,12 +5,21 @@ const createRole = async (req, res) => {
     try {
         const roleData = req.body;
         const newRole = await RoleQueries.createRole(roleData);
-        res.status(201).json(newRole);
+        return res.status(201).json(newRole);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating role', error });
+        return res.status(500).json({ message: 'Error creating role', error });
     }
 };
+//controlador  que muestra todos los roles 
+const getAllRoles = async(req, res) => {
+    try{
+        const roles = await RoleQueries.allRoles();
+        return res.status(200).json(roles);
 
+    }catch(error) {
+        return res.status(500).json({error: error.message});
+    }
+}
 // Controlador para encontrarun rol por ID
 const findRoleById = async (id) => {
     try {
@@ -30,9 +39,9 @@ const findRoles = async (req, res) => {
     try {
         const criteria = req.query;
         const roles = await RoleQueries.findRoles(criteria.name);
-        res.status(200).json(roles);
+        return res.status(200).json(roles);
     } catch (error) {
-        res.status(500).json({ message: 'Error finding roles', error });
+        return res.status(500).json({ message: 'Error finding roles', error });
     }
 };
 
@@ -45,9 +54,9 @@ const updateRole = async (req, res) => {
         if (!updatedRole) {
             return res.status(404).json({ message: 'Role not found' });
         }
-        res.status(200).json(updatedRole);
+        return res.status(200).json(updatedRole);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating Role', error });
+        return res.status(500).json({ message: 'Error updating Role', error });
     }
 };
 
@@ -59,14 +68,15 @@ const deleteRole = async (req, res) => {
         if (!result) {
             return res.status(404).json({ message: 'Role not found' });
         }
-        res.status(200).json({ message: 'Role deleted successfully' });
+        return res.status(200).json({ message: 'Role deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting role', error });
+        return res.status(500).json({ message: 'Error deleting role', error });
     }
 };
 
 module.exports = {
     createRole,
+    getAllRoles,
     findRoleById,
     findRoles,
     updateRole,

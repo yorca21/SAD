@@ -10,6 +10,15 @@ const createRole = async (roleData) => {
         throw error;
     }
 };
+//funcion para listr todos los roles 
+const allRoles = async () =>{
+    try {
+        const roles = await Role.find();
+        return roles;
+    }catch(error) {
+        throw error;
+    }
+}
 
 // Función para encontrar un rol por su ID
 const findRoleById = async (roleId) => {
@@ -53,6 +62,7 @@ const deleteRole = async (roleId) => {
 
 module.exports = {
     createRole,
+    allRoles,
     findRoleById,
     findRoles,
     updateRole,

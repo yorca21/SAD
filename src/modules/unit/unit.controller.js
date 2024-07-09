@@ -5,12 +5,20 @@ const createUnit = async (req, res) => {
     try {
         const unitData = req.body;
         const newUnit = await UnitQueries.createUnit(unitData);
-        res.status(201).json(newUnit);
+        return res.status(201).json(newUnit);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating Unit', error });
+        return res.status(500).json({ message: 'Error creating Unit', error });
     }
 };
-
+//controlador para listar las ,unidades
+const getAllUnits = async(req, res) => {
+    try{
+        const units =await UnitQueries.allUnits();
+        return  res.status(200).json(units);
+    }catch(error){
+        return res.status(500).json({ error: error.message });
+    }
+}
 // Controlador para encontrar una unidad por su ID
 const findUnitById = async (req, res) => {
     try {
@@ -19,9 +27,9 @@ const findUnitById = async (req, res) => {
         if (!unit) {
             return res.status(404).json({ message: 'Unit not found' });
         }
-        res.status(200).json(unit);
+        return res.status(200).json(unit);
     } catch (error) {
-        res.status(500).json({ message: 'Error finding unit', error });
+       return res.status(500).json({ message: 'Error finding unit', error });
     }
 };
 
@@ -30,9 +38,9 @@ const findUnits = async (req, res) => {
     try {
         const criteria = req.query;
         const units = await UnitQueries.findUnits(criteria.name);
-        res.status(200).json(units);
+        return res.status(200).json(units);
     } catch (error) {
-        res.status(500).json({ message: 'Error finding units', error });
+        return res.status(500).json({ message: 'Error finding units', error });
     }
 };
 
@@ -45,9 +53,9 @@ const updateUnit = async (req, res) => {
         if (!updatedUnit) {
             return res.status(404).json({ message: 'Unit not found' });
         }
-        res.status(200).json(updatedUnit);
+        return res.status(200).json(updatedUnit);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating unit', error });
+        return res.status(500).json({ message: 'Error updating unit', error });
     }
 };
 
@@ -59,14 +67,15 @@ const deleteUnit = async (req, res) => {
         if (!result) {
             return res.status(404).json({ message: 'Unit not found' });
         }
-        res.status(200).json({ message: 'Unit deleted successfully' });
+        return res.status(200).json({ message: 'Unit deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting unit', error });
+        return res.status(500).json({ message: 'Error deleting unit', error });
     }
 };
 
 module.exports = {
-    createUnit,
+    createUnit, 
+    getAllUnits,
     findUnitById,
     findUnits,
     updateUnit,

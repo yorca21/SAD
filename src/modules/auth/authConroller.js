@@ -11,8 +11,7 @@ exports.login = async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: 'Username incorrect' });
         }
-       /* console.log('Entered Password:', password);
-        console.log('Hashed Password:', user.password)*/
+    
         const validPassword = await comparePassword(password, user.password);
 
         if (!validPassword) {
@@ -24,10 +23,11 @@ exports.login = async (req, res) => {
              username: user.username, 
              role: user.role 
         }, process.env.JWT_SECRET, { expiresIn: '2h' });
-        res.json({ token });
+        
+        return res.json({ token });
     } catch (error) {
         console.error('Authentication Error:', error);
-        res.status(500).json({ message: 'Authentication Error:' });
+        return res.status(500).json({ message: 'Authentication Error:' });
     }
 };
 
@@ -50,9 +50,9 @@ exports.register = async (req, res) => {
             role: roleId
         });
 
-        res.status(201).json({ message: 'User successfully registered', user: newUser });
+        return res.status(201).json({ message: 'User successfully registered', user: newUser });
     } catch (error) {
         console.error('Error registering user:', error);
-        res.status(500).json({ message: 'Error registering user' });
+        return res.status(500).json({ message: 'Error registering user' });
     }
 };

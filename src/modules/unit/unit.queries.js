@@ -10,6 +10,15 @@ const createUnit = async (unitData) => {
         throw error;
     }
 };
+// funcion para listar las unidades 
+const allUnits = async() =>{
+    try{
+        const units = await Unit.find();
+        return units; 
+    }catch (error) {
+        throw error;
+    }
+}
 // Función para encontrar una unidad por ID
 const findUnitById = async (unitId) => {
     try {
@@ -51,6 +60,7 @@ const deleteUnit = async (unitId) => {
 
 module.exports = {
     createUnit,
+    allUnits,
     findUnitById,
     findUnits,
     updateUnit,

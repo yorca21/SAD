@@ -5,11 +5,20 @@ const createPermission = async (req, res) => {
     try {
         const permissionData = req.body;
         const newPermission = await PermissionQueries.createPermission(permissionData);
-        res.status(201).json(newPermission);
+        return res.status(201).json(newPermission);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating permission', error });
+        return res.status(500).json({ message: 'Error creating permission', error });
     }
 };
+// controlador para listar los permisos 
+const getAllPermissions = async (req, res) =>{
+    try{
+        const permissions = await PermissionQueries.allPermissions();
+        return res.status(200).json(permissions);
+    }catch(error){
+        return res.status(500).json({error: error.message});
+    }
+}
 
 // Controlador para encontrar un permiso por su ID
 const findPermissionById = async (req, res) => {
@@ -19,9 +28,9 @@ const findPermissionById = async (req, res) => {
         if (!permission) {
             return res.status(404).json({ message: 'Permission not found' });
         }
-        res.status(200).json(permission);
+        return res.status(200).json(permission);
     } catch (error) {
-        res.status(500).json({ message: 'Error finding permission', error });
+       return res.status(500).json({ message: 'Error finding permission', error });
     }
 };
 
@@ -30,9 +39,9 @@ const findPermissions = async (req, res) => {
     try {
         const criteria = req.query;
         const permissions = await PermissionQueries.findPermissions(criteria.name);
-        res.status(200).json(permissions);
+        return res.status(200).json(permissions);
     } catch (error) {
-        res.status(500).json({ message: 'Error finding permissions', error });
+        return res.status(500).json({ message: 'Error finding permissions', error });
     }
 };
 
@@ -45,9 +54,9 @@ const updatePermission = async (req, res) => {
         if (!updatedPermission) {
             return res.status(404).json({ message: 'Permission not found' });
         }
-        res.status(200).json(updatedPermission);
+        return res.status(200).json(updatedPermission);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating permission', error });
+        return res.status(500).json({ message: 'Error updating permission', error });
     }
 };
 
@@ -59,14 +68,15 @@ const deletePermission = async (req, res) => {
         if (!result) {
             return res.status(404).json({ message: 'Permission not found' });
         }
-        res.status(200).json({ message: 'Permission deleted successfully' });
+        return res.status(200).json({ message: 'Permission deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting permission', error });
+        return res.status(500).json({ message: 'Error deleting permission', error });
     }
 };
 
 module.exports = {
     createPermission,
+    getAllPermissions,
     findPermissionById,
     findPermissions,
     updatePermission,

@@ -1,3 +1,4 @@
+
 const Permission = require('./permission.schema');
 
 // Función para crear un nuevo permiso 
@@ -10,7 +11,15 @@ const createPermission = async (permissionData) => {
         throw error;
     }
 };
-
+//funcion que muestra todos los permisos 
+const allPermissions = async () => {
+    try{
+        const permissions = await Permission.find();
+        return permissions;
+    }catch (error){ 
+        throw error;
+    }
+}
 // Función para encontrar un permiso por ID
 const findPermissionById = async (permissionId) => {
     try {
@@ -53,6 +62,7 @@ const deletePermission = async (permissionId) => {
 
 module.exports = {
     createPermission,
+    allPermissions,
     findPermissionById,
     findPermissions,
     updatePermission,

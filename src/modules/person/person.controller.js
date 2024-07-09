@@ -5,9 +5,18 @@ const createPerson = async (req, res) => {
     try {
         const personData = req.body;
         const newPerson = await PersonQueries.createPerson(personData);
-        res.status(201).json(newPerson);
+        return  res.status(201).json(newPerson);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating person', error });
+        return res.status(500).json({ message: 'Error creating person', error });
+    }
+};
+//controlador para  listar todas las personas 
+const getAllPersons = async (req, res) => {
+    try {
+        const persons = await PersonQueries.allPersons();
+        return res.status(200).json(persons);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -19,9 +28,9 @@ const findPersonById = async (req, res,) => {
         if (!person) {
             return res.status(404).json({ message: 'Person not found' });
         }
-        res.status(200).json(person);
+        return res.status(200).json(person);
     } catch (error) {
-        res.status(500).json({ message: 'Error finding person', error });
+        return res.status(500).json({ message: 'Error finding person', error });
     }
 };
 
@@ -30,9 +39,9 @@ const findPersons = async (req, res) => {
     try {
         const criteria = req.query;
         const persons = await PersonQueries.findPersons(criteria);
-        res.status(200).json(persons);
+        return res.status(200).json(persons);
     } catch (error) {
-        res.status(500).json({ message: 'Error finding persons', error });
+        return res.status(500).json({ message: 'Error finding persons', error });
     }
 };
 
@@ -45,9 +54,9 @@ const updatePerson = async (req, res) => {
         if (!updatedPerson) {
             return res.status(404).json({ message: 'Person not found' });
         }
-        res.status(200).json(updatedPerson);
+        return res.status(200).json(updatedPerson);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating person', error });
+        return res.status(500).json({ message: 'Error updating person', error });
     }
 };
 
@@ -59,14 +68,15 @@ const deletePerson = async (req, res) => {
         if (!result) {
             return res.status(404).json({ message: 'Person not found' });
         }
-        res.status(200).json({ message: 'Person deleted successfully' });
+        return res.status(200).json({ message: 'Person deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting person', error });
+        return res.status(500).json({ message: 'Error deleting person', error });
     }
 };
 
 module.exports = {
     createPerson,
+    getAllPersons,
     findPersonById,
     findPersons,
     updatePerson,

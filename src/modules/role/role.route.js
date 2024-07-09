@@ -5,6 +5,9 @@ const router = Router();
 // Ruta para crear un nuevo rol
 router.post('/', roleController.createRole);
 
+///ruta para listar los roles
+router.get('/', roleController.getAllRoles);
+
 // Ruta para encontrar un rol por su ID
 router.get('/:id', roleController.findRoleById);
 

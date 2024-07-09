@@ -5,6 +5,9 @@ const router = Router();
 // Ruta para crear una nueva persona
 router.post('/', personController.createPerson);
 
+//ruta para listar las lpersonas 
+router.get('/', personController.getAllPersons);
+
 // Ruta para encontrar una persona por su ID
 router.get('/:id', personController.findPersonById);
 

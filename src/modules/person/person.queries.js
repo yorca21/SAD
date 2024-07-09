@@ -10,6 +10,15 @@ const createPerson = async (personData) => {
         throw error;
     }
 };
+// funcion que muestra todas las personas
+const allPersons = async () => {
+    try {
+        const persons = await Person.find();
+        return persons;
+    } catch (error) {
+        throw error;
+    }
+};
 // Función para encontrar una persona por su ID
 const findPersonById = async (personId) => {
     try {
@@ -60,6 +69,7 @@ const deletePerson = async (personId) => {
 
 module.exports = {
     createPerson,
+    allPersons,
     findPersonById,
     findPersons,
     updatePerson,

@@ -5,6 +5,8 @@ const router = Router();
 // Ruta para crear una nueva unidad
 router.post('/', unitController.createUnit);
 
+//ruta para listar unidades 
+router.get('/', unitController.getAllUnits);
 // Ruta para encontrar una unidad por su ID
 router.get('/:id', unitController.findUnitById);
 
