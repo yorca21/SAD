@@ -10,7 +10,7 @@ const personSchema = new Schema({
         type: Schema.Types.String, 
         required: true 
     },
-    cI:{
+    CI:{
         type: Number,
         require: true
     },
