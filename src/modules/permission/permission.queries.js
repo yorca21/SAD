@@ -33,7 +33,7 @@ const findPermissionById = async (permissionId) => {
 // Función para encontrar permisos por ciertos criterios
 const findPermissions = async (criteria) => {
     try {
-        const permissions = await Permission.find(criteria.name);
+        const permissions = await Permission.find(criteria);
         return permissions;
     } catch (error) {
         throw error;

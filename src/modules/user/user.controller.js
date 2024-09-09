@@ -6,6 +6,7 @@ const createUser = async (req, res) => {
         const newUser = await UserQueries.createUser(req.body);
         return res.status(201).json(newUser);
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ error: error.message });
     }
 };
@@ -17,6 +18,34 @@ const getAllUsers = async (req, res) => {
     } catch (error) {
         console.error('Error getting users:', error);
         return res.status(500).json({ message: 'Error getting users:' });
+    }
+};
+// Controlador para encontrar usuarios por ciertos criterios
+const findUsers = async (req, res) => {
+    try {
+        const criteria = {};
+
+        // Procesar el estado (state) si está presente en la consulta
+        if (req.query.state) {
+            if (req.query.state.toLowerCase() === 'active') {
+                criteria.state = true;
+            } else if (req.query.state.toLowerCase() === 'inactive') {
+                criteria.state = false;
+            } else {
+                // Si se espera que sea una cadena de texto, se agrega directamente
+                criteria.state = req.query.state;
+            }
+        }
+        // Llamar a la función `findUsers` en `UserQueries` con los criterios establecidos
+        const users = await UserQueries.findUsers(criteria);
+        if (users.length === 0) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+        // Devolver la lista de usuarios encontrados
+        return res.status(200).json(users);
+    } catch (error) {
+        // Manejo de errores
+        return res.status(500).json({ message: 'Error finding users', error });
     }
 };
 
@@ -48,16 +77,7 @@ const getUserByUsername = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 };
-// Controlador para encontrar usuarios por ciertos criterios
-const findUsers = async (req, res) => {
-    try {
-        const criteria = req.query;
-        const users = await UserQueries.findUsers(criteria);
-        return res.status(200).json(users);
-    } catch (error) {
-        return res.status(500).json({ message: 'Error finding users', error });
-    }
-};
+
 // Controlador para actualizar un usuario
 const updateUser = async (req, res) => {
     try {

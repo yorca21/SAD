@@ -1,5 +1,6 @@
 const express = require('express')
 const { initDB }= require('./config/db/mongo')
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 class ExpressServer {
@@ -11,9 +12,15 @@ class ExpressServer {
         this.initmongoDB()
     }
     middlewares(){
+        const corsOptions = {
+            origin: 'http://localhost:5173', // URL del frontend
+            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+            credentials: true // Permite el envío de credenciales
+        };
         
-        this.app.use(cors());
+        this.app.use(cors(corsOptions));
         this.app.use(express.json());
+        this.app.use(cookieParser()); 
         this.app.use(express.static('public'));
     }
     routes() {

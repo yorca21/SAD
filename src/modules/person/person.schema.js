@@ -11,12 +11,12 @@ const personSchema = new Schema({
         required: true 
     },
     CI:{
-        type: Number,
-        require: true
+        type: Schema.Types.Number,
+        required: true
     },
     phone: {
-        type: Number,
-        require: true
+        type: Schema.Types.Number,
+        required: true
 
     },
     email: { 
@@ -32,8 +32,6 @@ const personSchema = new Schema({
     },
     
 })
-personSchema.virtual('fullName').get(function() {
-    return `${this.firstName} ${this.lastName}`;
-});
+
 const Person = mongoose.model('Person', personSchema);
 module.exports = Person

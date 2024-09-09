@@ -12,7 +12,7 @@ router.get('/', roleController.getAllRoles);
 router.get('/:id', roleController.findRoleById);
 
 // Ruta para encontrar roles por ciertos criterios
-router.get('/', roleController.findRoles);
+router.get('/search', roleController.findRoles);
 
 // Ruta para actualizar un rol
 router.put('/:id', roleController.updateRole);

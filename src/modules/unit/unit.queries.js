@@ -22,7 +22,7 @@ const allUnits = async() =>{
 // Función para encontrar una unidad por ID
 const findUnitById = async (unitId) => {
     try {
-        const unit = await Unit.findById(unitId).populate('permissions');
+        const unit = await Unit.findById(unitId)
         return unit;
     } catch (error) {
         throw error;
@@ -32,7 +32,7 @@ const findUnitById = async (unitId) => {
 // Función para encontrar unidades por ciertos criterios
 const findUnits = async (criteria) => {
     try {
-        const units = await Unit.find(criteria.name).populate('permissions');
+        const units = await Unit.find(criteria)
         return units;
     } catch (error) {
         throw error;
@@ -42,7 +42,7 @@ const findUnits = async (criteria) => {
 // Función para actualizar un rol
 const updateUnit = async (unitId, newData) => {
     try {
-        const updatedUnit = await Unit.findByIdAndUpdate(unitId, newData, { new: true }).populate({path:'name', model: Permission });
+        const updatedUnit = await Unit.findByIdAndUpdate(unitId, newData, { new: true })
         return updatedUnit;
     } catch (error) {
         throw error;

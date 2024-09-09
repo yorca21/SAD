@@ -6,7 +6,7 @@ const unitSchema = new mongoose.Schema({
         type: Schema.Types.String,
         require: true
     },
-    decription:{
+    description:{
         type :Schema.Types.String,
         require : true
     },

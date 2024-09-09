@@ -6,8 +6,8 @@ const initDB = async () => {
 
         await mongoose.connect(MONGO_URI, {
             
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
+            // useNewUrlParser: true,
+            // useUnifiedTopology: true,
         });
         console.log(`connected to the Mongodb`);
     } catch (error) {

@@ -7,7 +7,7 @@ const roleSchema = new Schema({
         required: true,
         unique: true
     },
-    decription:{
+    description:{
         type :Schema.Types.String,
         require : true
     },

@@ -1,11 +1,13 @@
 const { Router } = require('express');
 const router = Router();
-const authController = require('./authConroller');
-const path = require('path');
+const  authController  = require('./authController');
+
 // Ruta para el inicio de sesión 
 router.post('/login', authController.login);
 
-// Ruta para el registro de usuarios 
-router.post('/register', authController.register);
+router.post('/refresh-token', authController.refreshToken);
+
+// Ruta para validar el token
+router.get('/validate', authController.validateToken);
 
 module.exports = router;

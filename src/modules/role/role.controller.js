@@ -21,44 +21,73 @@ const getAllRoles = async(req, res) => {
     }
 }
 // Controlador para encontrarun rol por ID
-const findRoleById = async (id) => {
+
+const findRoleById = async (req, res) => {
     try {
-        const role = await RoleQueries.findRoleById(id);
+        const role = await RoleQueries.findRoleById(req.params.id);
         if (!role) {
-            throw new Error('Role not found');
+            return res.status(404).json({ message: 'Role not found' });
         }
-        return role;
+        return res.status(200).json(role);
     } catch (error) {
-        console.error('Error finding role:', error);
-        throw error;
+        return res.status(500).json({ message: 'Error finding role', error });
     }
 };
+
+// const findRoleById = async (id) => {
+//     try {
+//         const role = await RoleQueries.findRoleById(id);
+//         if (!role) {
+//             throw new Error('Role not found');
+//         }
+//         return role;
+//     } catch (error) {
+       
+//         throw error;
+//     }
+// };
 
 // Controlador para encontrar un rol acorde a ciertos criterios
 const findRoles = async (req, res) => {
     try {
         const criteria = req.query;
-        const roles = await RoleQueries.findRoles(criteria.name);
+        const roles = await RoleQueries.findRoles(criteria);
         return res.status(200).json(roles);
     } catch (error) {
         return res.status(500).json({ message: 'Error finding roles', error });
     }
 };
 
-// Controlador para actualizar un  rol
+// Controlador para actualizar un rol
 const updateRole = async (req, res) => {
+    const roleId = req.params.id;
+    const newRole = req.body;
+
+    // Verificar que el roleId es válido
+    if (!roleId || !newRole) {
+        return res.status(400).json({ message: 'Invalid role ID or update data' });
+    }
+
     try {
-        const roleId = req.params.id;
-        const newRole = req.body;
+        // Llamar a la función de actualización del rol
         const updatedRole = await RoleQueries.updateRole(roleId, newRole);
+
         if (!updatedRole) {
             return res.status(404).json({ message: 'Role not found' });
         }
+
+        // Enviar respuesta exitosa
         return res.status(200).json(updatedRole);
     } catch (error) {
-        return res.status(500).json({ message: 'Error updating Role', error });
+        // Manejo de errores específicos y respuesta de error
+        console.error('Error updating role:', error);
+        return res.status(500).json({
+            message: 'Error updating role',
+            error: error.message || 'An unexpected error occurred',
+        });
     }
 };
+
 
 // Controlador para eliminar un rol
 const deleteRole = async (req, res) => {
