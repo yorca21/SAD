@@ -13,6 +13,9 @@ const createUser = async (req, res) => {
 // Controlador para obtener todos los usuarios
 const getAllUsers = async (req, res) => {
     try {
+        if(!req.user){
+            return res.status(401).json({ msg:'Usuario no autorizado'});
+        }
         const users = await UserQueries.allUsers(req.body);
         return res.status(201).json(users); 
     } catch (error) {

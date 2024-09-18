@@ -36,7 +36,7 @@ const findUsers = async (criteria) => {
             .populate({ path: 'roles', model: 'Role' })
             .populate({ path: 'unit', model: 'Unit' });
 
-        console.log('Users Found:', users);  // Verifica los usuarios encontrados
+      //console.log('Users Found:', users);  // Verifica los usuarios encontrados
         return users;
     } catch (error) {
         console.error('Error finding users:', error);

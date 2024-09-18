@@ -14,7 +14,7 @@ const createRole = async (roleData) => {
 //funcion para listar todos los roles 
 const allRoles = async () =>{
     try {
-        const roles = await Role.find();
+        const roles = await Role.find().populate({ path: 'permissions', select: 'name' });;
         return roles;
     }catch(error) {
         throw error;

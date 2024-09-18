@@ -14,7 +14,6 @@ class ExpressServer {
     middlewares(){
         const corsOptions = {
             origin: 'http://localhost:5173', // URL del frontend
-            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true // Permite el envío de credenciales
         };
         

@@ -34,28 +34,42 @@ const authenticateToken = (req, res, next) => {
         if (err) 
         return res.status(403).json({ 
            message: 'Invalid authentication token' });
+
+        
         req.user = user;
         next();
     });
 };
 
 
-// Middleware para autorizar roles específicos
+// Middleware para autorizar roles 
 const authorizeRoles = (roles) => (req, res, next) => {
-  
-    if (!req.user) {
-        return res.status(500).json({
+   
+    const userData = req.user;
+   
+    if (!userData) {
+
+        return res.status(401).json({
             msg: 'Role verification is required before validating the token'
         });
-    };
-
-    if (roles.includes(req.user.roles)) {
-        return res.status(401).json({
-            msg: `This action can only be performed by the Administrator.`
+    }
+    
+    // Verifica si algún rol del usuario está en la lista de roles permitidos
+    
+    const rolesToCheck = Array.isArray(roles) ? roles : [roles];
+    
+    const hasRole = rolesToCheck.some(role => 
+        userData.roles.map(r => (r ? r.trim() : '')).includes(role ? role.trim() : '')
+    );
+    
+    if (!hasRole) {
+        
+        return res.status(403).json({
+            msg: 'Esta acción solo la puede realizar un Administrador.'
         });
-    };
+    }
 
-    next();  
+    next();
 };
 
 module.exports = {

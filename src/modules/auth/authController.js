@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
             person: user.person,
             unit: user.unit
         };
-       // console.log('Token Payload:', tokenPayload);
+     
 
         // Generar el Access Token
         const accessToken = await generateToken(tokenPayload, jwtSecret, '10h');
@@ -44,8 +44,8 @@ exports.login = async (req, res) => {
         // Enviar el Refresh Token como cookie
         res.cookie('refreshToken', refreshToken, { 
           httpOnly: true, 
-          secure: process.env.NODE_ENV === 'production', 
-          sameSite: 'Strict'
+          secure: false, //process.env.NODE_ENV === 'production', 
+          sameSite: 'Lax'
         });
         
         // Devolver el Access Token al cliente
@@ -90,7 +90,7 @@ exports.refreshToken = async (req, res) => {
         // Enviar el nuevo Refresh Token como cookie
         res.cookie('refreshToken', newRefreshToken, { 
             httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production', 
+            secure: false,//process.env.NODE_ENV === 'production', 
             sameSite: 'Strict'
         });
 
@@ -117,7 +117,7 @@ exports.validateToken = (req, res) => {
     try {
         const decoded = jwt.verify(token, jwtSecret);
 
-        //console.log('Decoded Token:', decoded);
+   
         req.user = decoded; 
         res.status(200).json({ 
             userId: decoded.userId, 
