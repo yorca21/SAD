@@ -14,7 +14,9 @@ const createUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
     try {
         if(!req.user){
-            return res.status(401).json({ msg:'Usuario no autorizado'});
+            return res.status(401).json({ 
+                msg:'Unauthorized user'
+            });
         }
         const users = await UserQueries.allUsers(req.body);
         return res.status(201).json(users); 

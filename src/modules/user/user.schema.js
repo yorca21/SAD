@@ -38,11 +38,12 @@ const userSchema = new mongoose.Schema({
         ref: 'Unit',
         require: true
     },
-    refreshToken: { // Nuevo campo para el refresh token
+    // Nuevo campo para el refresh token
+    refreshToken: { 
         type: Schema.Types.String,
         default: null
     }
-})
+}, { timestamps: true })
 
 // Hook pre-save para cifrar la contraseña antes de guardar
 userSchema.pre('save', async function(next) {

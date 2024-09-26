@@ -30,6 +30,9 @@ class ExpressServer {
         this.app.use('/role', require('./modules/role/role.route'));
         this.app.use('/permission', require('./modules/permission/permission.router'));
         this.app.use('/unit', require('./modules/unit/unit.router'));
+        this.app.use('/newdebt', require('./ManagementModels/newdebt/register.router'));
+        this.app.use('/activityhistory', require('./ManagementModels/activityhistory/activity.router'));
+        
     }
     async initmongoDB(){
         await initDB();
