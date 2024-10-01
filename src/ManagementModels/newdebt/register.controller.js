@@ -4,11 +4,13 @@ const RegisterQueries = require('./register.queries');
 // Controlador para crear un nuevo registro
 const createRegister = async (req, res) => {
     try {
-        const registerData = req.body;
-        const newRegister = await RegisterQueries.createRegister(registerData);
+       
+        const newRegister = await RegisterQueries.createRegister(req.body);
         return  res.status(201).json(newRegister);
     } catch (error) {
+        console.error('Error en createRegister:', error); 
        return res.status(500).json({
+        
          msg: 'Error creating register', error 
         });
     }
@@ -17,12 +19,8 @@ const createRegister = async (req, res) => {
 // Controlador para obtener todos los registros
 const getAllRegisters = async (req, res) => {
     try {
-        if(!req.register){
-            return res.status(401).json({
-                msg:'Unauthorized register'
-            });
-        }
-        const registers = await RegisterQueries.allRegister(req.body);
+    
+        const registers = await RegisterQueries.allRegister();
          return res.status(200).json(registers);
     } catch (error) {
        return res.status(500).json({ 

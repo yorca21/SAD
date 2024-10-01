@@ -7,7 +7,7 @@ const RegisterDebtSchema = new mongoose.Schema({
         type : Schema.Types.String,
         required : true 
     },  
-    CIdebetor:{
+    CIdebtor:{
          type: Schema.Types.Number,
          required: true
     },                  
@@ -24,13 +24,13 @@ const RegisterDebtSchema = new mongoose.Schema({
   createdBy:{
      type: mongoose.Schema.Types.ObjectId, 
      ref: 'User', 
-     required: true 
-}, // Referencia al usuario que lo creó
-  
-updatedBy:{
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User' 
-},  // Último usuario que lo actualizó
+    
+    }, // Referencia al usuario que lo creó
+    
+    updatedBy:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+    },  // Último usuario que lo actualizó
 },
 { timestamps: true });  // Habilita createdAt y updatedAt automáticamente
 

@@ -7,9 +7,8 @@ const createRegister = async(registerData) =>{
         const newRegister = new Register(registerData);
         await newRegister.save();
         return newRegister;
-
-
     }catch(error){
+        console.error('Error en createRegister (DB):', error); 
         throw error;
     }
 };
@@ -19,7 +18,7 @@ const allRegister = async() => {
     try{
         const register = await Register.find()
         .populate({ path:'createdBy', model: 'User'})
-        .populate({path: 'updatedBy', model:'User'});
+        .populate({ path: 'updatedBy', model:'User'});
         
         return register;
 

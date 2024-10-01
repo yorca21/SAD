@@ -59,7 +59,7 @@ const authorizeRoles = (roles) => (req, res, next) => {
     const rolesToCheck = Array.isArray(roles) ? roles : [roles];
     
     const hasRole = rolesToCheck.some(role => 
-        userData.roles.map(r => (r ? r.trim() : '')).includes(role ? role.trim() : '')
+        userData.roles.map(r => (r ? r.trim() : '')).includes(role.trim())
     );
     
     if (!hasRole) {

@@ -28,16 +28,14 @@ const allUsers = async () => {
 // Función para encontrar usuarios por ciertos criterios
 const findUsers = async (criteria) => {
     try {
-        console.log('Search Criteria:', criteria);  // Verifica los criterios de búsqueda
-
+       
         const users = await User.find(criteria)
             .populate({ path: 'person', model: 'Person' })
             .populate({ path: 'permissions', model: 'Permission' })
             .populate({ path: 'roles', model: 'Role' })
             .populate({ path: 'unit', model: 'Unit' });
 
-      //console.log('Users Found:', users);  // Verifica los usuarios encontrados
-        return users;
+          return users;
     } catch (error) {
         console.error('Error finding users:', error);
         throw error;
