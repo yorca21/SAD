@@ -18,8 +18,14 @@ const RegisterDebtSchema = new mongoose.Schema({
     status:{ 
     type: Schema.Types.String, 
     enum: ['draft', 'verified', 'regularized', 'archived'], 
+    default: 'draft'
    
   },   
+  // manejo del esquema debts 
+  debts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Debts'  
+}],
   // Manejo de estado del registro                                                       
   createdBy:{
      type: mongoose.Schema.Types.ObjectId, 

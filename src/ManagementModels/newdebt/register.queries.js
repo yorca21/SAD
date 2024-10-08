@@ -79,11 +79,45 @@ const deleteRegister = async(registerId) => {
 
     }
 };
+//gestion de deudas en el modelo de deudor 
+//funcion para agregar una nueva deuda un un deudor 
+const addDebtToRegister = async (registerId, debtData) => {
+    try {
+        const debtor = await Register.findById(registerId);
+        if (!debtor) {
+            throw new Error('Deudor no encontrado');
+        }
+        debtor.debts.push(debtData);  // Añadir la nueva deuda al array de debts
+        await debtor.save();  // Guardar el registro con la deuda añadida
+        return debtor;
+    } catch (error) {
+        console.error('Error al agregar deuda:', error);
+        throw error;
+    }
+};
+// funcion para eliminar una deuda del modelo deudor 
+const removeDebtFromRegister = async (registerId, debtId) => {
+    try {
+        const debtor = await Register.findById(registerId);
+        if (!debtor) {
+            throw new Error('Deudor no encontrado');
+        }
+        debtor.debts = debtor.debts.filter(debt => debt._id.toString() !== debtId);  // Eliminar la deuda por su _id
+        await debtor.save();  // Guardar el registro con la deuda eliminada
+        return debtor;
+    } catch (error) {
+        console.error('Error al eliminar deuda:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     createRegister,
     allRegister,
     findRegistersById,
     findRegisters,
     updateRegister,
-    deleteRegister
+    deleteRegister,
+    addDebtToRegister,
+    removeDebtFromRegister
 };
