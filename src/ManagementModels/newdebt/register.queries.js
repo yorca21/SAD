@@ -1,123 +1,68 @@
-const Register = require('./Register.js');
+const Debtor = require('./Register');
 
-// Funcio para crear el nuevo registro 
-const createRegister = async(registerData) =>{
-
-    try{
-        const newRegister = new Register(registerData);
-        await newRegister.save();
-        return newRegister;
-    }catch(error){
-        console.error('Error en createRegister (DB):', error); 
-        throw error;
-    }
-};
-// Funcion para obtener todos los registros 
-const allRegister = async() => {
-
-    try{
-        const register = await Register.find()
-        .populate({ path:'createdBy', model: 'User'})
-        .populate({ path: 'updatedBy', model:'User'});
-        
-        return register;
-
-    }catch(error){
-        throw error;
-    }
+// Crear un nuevo deudor
+const createDebtor = async (debtorData) => {
+  const newDebtor = new Debtor(debtorData);
+  return await newDebtor.save();
 };
 
-//Funcion para encontrar el registro por ciertos criterios 
-const findRegisters = async(criterial) => {
-    try{
-        const registers = await Register.find(criterial)
-        .populate({path: 'createdBy', model:'User'})
-        .populate({path: 'updatedBy', model:'User'});
-
-        return registers;
-
-    }catch(error){
-        throw error;
-    }
+// Obtener todos los deudores
+const getAllDebtors = async () => {
+  return await Debtor.find().populate('debts');
 };
 
-//Funcion para encontrar un registro por su id 
-const findRegistersById = async(registerId) =>{
-    try{
-        const register = await Register.findById(registerId)
-        .populate({path: 'createdBy', model: 'User'})
-        .populate({path: 'updatedBy', model: 'User'});
-
-        return register;
-
-    }catch(error){
-        throw error;
-    }
+// Obtener un deudor por ID
+const getDebtorById = async (debtorId) => {
+  return await Debtor.findById(debtorId).populate('debts');
 };
-
-// funcion para actualizar/ editar un registro 
-const updateRegister = async(registerId, newData) => {
-    try{
-        const updatedRegister = await Register.findByIdAndUpdate(registerId, newData, {new: true})
-        .populate({path:'createdBy', model:'User'})
-        .populate({path:'updatedBy', model:'User'});
-
-        return updatedRegister;
-    }catch(error){
-        throw error;
+// Función para buscar deudores por criterios dinámicos
+const searchDebtors = async (criteria) => {
+    const query = {};
+  
+    // Si el criterio de nombre de deudor existe, añádelo a la consulta
+    if (criteria.name) {
+      query.name = new RegExp(criteria.name, 'i');  // Búsqueda insensible a mayúsculas/minúsculas
     }
-};
-// Funcion para eliminar el registro 
-const deleteRegister = async(registerId) => {
-    try{
-        await Register.findByIdAndDelete(registerId);
-        return {
-            msg: 'Register deleted successfully'
-        };
-    }catch(error){
-        throw error;
-
+  
+    // Si el criterio de CI existe, añádelo a la consulta
+    if (criteria.ci) {
+      query.ci = criteria.ci;
     }
-};
-//gestion de deudas en el modelo de deudor 
-//funcion para agregar una nueva deuda un un deudor 
-const addDebtToRegister = async (registerId, debtData) => {
+  
+    // Si el criterio de estado existe, añádelo a la consulta
+    if (criteria.status) {
+      query.status = criteria.status;
+    }
+  
+    // Si el criterio de deuda específica existe (por ejemplo, por un ID de deuda)
+    if (criteria.debtId) {
+      query.debts = criteria.debtId;
+    }
+  
     try {
-        const debtor = await Register.findById(registerId);
-        if (!debtor) {
-            throw new Error('Deudor no encontrado');
-        }
-        debtor.debts.push(debtData);  // Añadir la nueva deuda al array de debts
-        await debtor.save();  // Guardar el registro con la deuda añadida
-        return debtor;
+      // Realiza la búsqueda con los criterios dinámicos
+      const debtors = await Register.find(query).populate('Debt');  // Poblará las deudas asociadas
+      return debtors;
     } catch (error) {
-        console.error('Error al agregar deuda:', error);
-        throw error;
+      throw new Error('Error al buscar deudores');
     }
+  };
+  
+// Actualizar un deudor
+const updateDebtor = async (debtorId, updateData) => {
+  return await Debtor.findByIdAndUpdate(debtorId, updateData, { new: true });
 };
-// funcion para eliminar una deuda del modelo deudor 
-const removeDebtFromRegister = async (registerId, debtId) => {
-    try {
-        const debtor = await Register.findById(registerId);
-        if (!debtor) {
-            throw new Error('Deudor no encontrado');
-        }
-        debtor.debts = debtor.debts.filter(debt => debt._id.toString() !== debtId);  // Eliminar la deuda por su _id
-        await debtor.save();  // Guardar el registro con la deuda eliminada
-        return debtor;
-    } catch (error) {
-        console.error('Error al eliminar deuda:', error);
-        throw error;
-    }
+
+// Eliminar un deudor
+const deleteDebtor = async (debtorId) => {
+  return await Debtor.findByIdAndDelete(debtorId);
 };
 
 module.exports = {
-    createRegister,
-    allRegister,
-    findRegistersById,
-    findRegisters,
-    updateRegister,
-    deleteRegister,
-    addDebtToRegister,
-    removeDebtFromRegister
+  createDebtor,
+  getAllDebtors,
+  getDebtorById,
+  searchDebtors,
+  updateDebtor,
+  deleteDebtor,
 };

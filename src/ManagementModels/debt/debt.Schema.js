@@ -1,16 +1,25 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const DebtSchema = new Schema({
-  
-    date: { 
-        type: Schema.Types.Date, 
-        required: true 
-    },  // Fecha del adeudo
-    isPaid: { 
-        type: Schema.Types.Boolean, 
-        default: false 
-    },  // Estado de la deuda, si está pagada o no
-});
-const Debts = mongoose.model('Debts', DebtSchema);
-module.exports = Debts;
+const DebtSchema = new mongoose.Schema({
+  amount: {
+    type: Schema.Types.Number,
+   
+  },
+  description: {
+    type: Schema.Types.String,
+    required: true,
+  },
+  recordDate: {
+    type: Date,
+    required: true,
+  },
+  debtor: {
+    type: Schema.Types.ObjectId,
+    ref: 'Register',
+    required: true,
+  },
+}, { timestamps: true });
+
+const Debt = mongoose.model('Debt', DebtSchema);
+module.exports = Debt

@@ -1,44 +1,28 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 const { Schema } = mongoose;
 
-const RegisterDebtSchema = new mongoose.Schema({
-  
-    namedebtor:{ 
-        type : Schema.Types.String,
-        required : true 
-    },  
-    CIdebtor:{
-         type: Schema.Types.Number,
-         required: true
-    },                  
-    description:{
-        type : Schema.Types.String,
-        require : true
-    },               
-    status:{ 
-    type: Schema.Types.String, 
-    enum: ['draft', 'verified', 'regularized', 'archived'], 
-    default: 'draft'
-   
-  },   
-  // manejo del esquema debts 
+const DebtorSchema = new mongoose.Schema({
+  name: {
+    type: Schema.Types.String,
+    required: true,
+  },
+  ci: {
+    type: Schema.Types.String,
+    required: true,
+    unique: true,
+  },
+  status: {
+    type: Schema.Types.String,
+    enum: ['pending', 'active', 'deregistered'],
+    default: 'pending',
+  },
+  file: {
+    type: Schema.Types.String,
+  },
   debts: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Debts'  
-}],
-  // Manejo de estado del registro                                                       
-  createdBy:{
-     type: mongoose.Schema.Types.ObjectId, 
-     ref: 'User', 
-    
-    }, // Referencia al usuario que lo creó
-    
-    updatedBy:{
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' 
-    },  // Último usuario que lo actualizó
-},
-{ timestamps: true });  // Habilita createdAt y updatedAt automáticamente
-
-const Register = mongoose.model('Register', RegisterDebtSchema);
-module.exports = Register;
+    type: Schema.Types.ObjectId,
+    ref: 'Debt',
+  }],
+}, { timestamps: true });
+const Debtor = mongoose.model('Debtor', DebtorSchema);
+module.exports = Debtor
