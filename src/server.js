@@ -19,6 +19,7 @@ class ExpressServer {
         
         this.app.use(cors(corsOptions));
         this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true })); // Para datos codificados en URL
         this.app.use(cookieParser()); 
         this.app.use(express.static('public'));
     }

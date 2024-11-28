@@ -19,6 +19,10 @@ const DebtSchema = new mongoose.Schema({
     ref: 'Register',
     required: true,
   },
+  isVisible: { 
+    type: Schema.Types.Boolean, 
+    default: true 
+  },
 }, { timestamps: true });
 
 const Debt = mongoose.model('Debt', DebtSchema);

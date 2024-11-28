@@ -41,7 +41,7 @@ const searchDebtors = async (criteria) => {
   
     try {
       // Realiza la búsqueda con los criterios dinámicos
-      const debtors = await Register.find(query).populate('Debt');  // Poblará las deudas asociadas
+      const debtors = await Debtor.find(query).populate('debt');  // Poblará las deudas asociadas
       return debtors;
     } catch (error) {
       throw new Error('Error al buscar deudores');
@@ -49,8 +49,15 @@ const searchDebtors = async (criteria) => {
   };
   
 // Actualizar un deudor
-const updateDebtor = async (debtorId, updateData) => {
-  return await Debtor.findByIdAndUpdate(debtorId, updateData, { new: true });
+const updateDebtor = async (id, updateData) => {
+  try {
+      const options = { new: true, runValidators: true };
+      const updatedDebtor = await Debtor.findByIdAndUpdate(id, updateData, options);
+
+      return updatedDebtor;
+  } catch (error) {
+      throw new Error(`Error actualizando el deudor: ${error.message}`);
+  }
 };
 
 // Eliminar un deudor

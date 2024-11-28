@@ -80,16 +80,39 @@ const searchDebtors = async (req, res) => {
     return res.status(500).json({ message: 'Error al buscar deudores', error: error.message });
   }
 };
-
-// Controlador que actualiza al deudor 
+// Controlador que actualiza al deudor
 const updateDebtor = async (req, res) => {
+  const { id } = req.params;
+  const { name, ci, status, debts } = req.body;
+
   try {
-    const debtorId = req.params.id;
-    const updatedDebtor = await DebtorQueries.updateDebtor(debtorId, req.body);
-    if (!updatedDebtor) return res.status(404).json({ message: 'Deudor no encontrado' });
-    return res.status(200).json(updatedDebtor);
+      // Actualizar datos principales del deudor
+      const updatedDebtor = await DebtorQueries.updateDebtor(
+          id, 
+          { 
+            name, 
+            ci, 
+            status 
+          }
+      );
+
+      if (!updatedDebtor) {
+          return res.status(404).json({ message: 'Deudor no encontrado' });
+      }
+
+      // Si hay deudas, procesarlas
+      if (debts && debts.length) {
+          const newDebts = await Promise.all(
+              debts.map(debt => DebtQueries.createDebt(id, debt))
+          );
+          updatedDebtor.debts = newDebts.map(debt => debt._id);
+          await updatedDebtor.save();
+      }
+
+      res.status(200).json({ message: 'Deudor actualizado exitosamente', debtor: updatedDebtor });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+      console.error('Error actualizando el deudor:', error);
+      res.status(500).json({ message: 'Error actualizando el deudor', error: error.message });
   }
 };
 
