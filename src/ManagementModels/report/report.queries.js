@@ -16,8 +16,14 @@ const getDebtorsByCriteria = async ({ status, startDate, endDate }) => {
       };
     }
   
-    // Realizar la consulta y popular deudas relacionadas
-    return await Debtor.find(query).populate('debts');
+    try {
+      // Buscar deudores según los filtros
+      const debtors = await Debtor.find(query).populate('debts');  // Asegúrate de que estés poblando las deudas si es necesario
+      return debtors;
+    } catch (error) {
+      console.error('Error al obtener deudores:', error);
+      throw error;
+    }
   };
   
   module.exports = { getDebtorsByCriteria };
