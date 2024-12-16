@@ -35,7 +35,7 @@ class ExpressServer {
         this.app.use('/debt', require('./ManagementModels/debt/debt.router'))
         this.app.use('/activityhistory', require('./ManagementModels/activityhistory/activity.router'));
         this.app.use('/report', require('./ManagementModels/report/report.router'));
-
+        this.app.use('/preview', require('./ManagementModels/preview/preview.router'));
     }
     async initmongoDB(){
         await initDB();

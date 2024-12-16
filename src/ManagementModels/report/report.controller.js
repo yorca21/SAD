@@ -4,8 +4,7 @@ const { generatePDF } = require('./report.utils');
 const generateDebtorReport = async (req, res) => {
   try {
     const { status, startDate, endDate } = req.query;
-    console.log('Parámetros recibidos:', { status, startDate, endDate });
-
+   
     // Obtener los deudores según los filtros proporcionados
     const debtors = await getDebtorsByCriteria({ status, startDate, endDate });
 
@@ -15,8 +14,7 @@ const generateDebtorReport = async (req, res) => {
 
     // Generar el PDF con los datos obtenidos
     const pdfBuffer = await generatePDF(debtors, 'Reporte de Deudores');
-    console.log('PDF generado:', pdfBuffer);
-
+   
     // Configurar la respuesta para descargar el PDF
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename="reporte_deudores.pdf"');
