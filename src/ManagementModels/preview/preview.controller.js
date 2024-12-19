@@ -5,7 +5,7 @@ const Debtor = require('../newdebt/Register');
 const generateDebtorPDF = async (req, res) => {
     try {
         const { debtorId } = req.body;
-        console.log('req body =>', debtorId);
+        // console.log('req body =>', debtorId);
 
         // Validación del ID de deudor
         if (!debtorId) {

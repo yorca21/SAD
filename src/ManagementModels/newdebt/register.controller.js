@@ -1,3 +1,4 @@
+const { Error } = require('mongoose');
 const DebtQueries = require('../debt/debt.queries');
 const DebtorQueries = require('./register.queries');
 
@@ -5,7 +6,7 @@ const DebtorQueries = require('./register.queries');
 const createDebtor = async (req, res) => {
   try {
     const { name, ci, status, debts } = req.body;
-    console.log("Datos recibidos en req.body:", req.body);
+   // console.log("Datos recibidos en req.body:", req.body);
 
     // Acceder al archivo subido
     const file = req.file;
@@ -25,13 +26,20 @@ const createDebtor = async (req, res) => {
     // Procesar y crear deudas si están presentes
     if (debts) {
       const parsedDebts = Array.isArray(debts) ? debts : JSON.parse(debts);
-      const debtPromises = parsedDebts.map(debt =>
-        DebtQueries.createDebt(newDebtor._id, debt)
-      );
+      const debtPromises = parsedDebts.map(debt =>{
+        if(!debt.unit){
+            throw new Error('El registro de deudas debe contar el ID de la unidad en la que se genero.')
+        }
+
+           return  DebtQueries.createDebt(newDebtor._id, debt)
+      });
       await Promise.all(debtPromises);
     }
 
-    return res.status(201).json({ message: 'Deudor creado exitosamente', debtor: newDebtor });
+    return res.status(201).json({ 
+      message: 'Deudor creado exitosamente', 
+      debtor: newDebtor 
+    });
   } catch (error) {
     console.error("Error al crear el deudor:", error);
     // Manejo de errores específico
@@ -82,6 +90,7 @@ const searchDebtors = async (req, res) => {
 };
 // Controlador que actualiza al deudor
 const updateDebtor = async (req, res) => {
+  console.log(req.body)
   const { id } = req.params;
   const { name, ci, status, debts } = req.body;
 

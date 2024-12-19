@@ -19,6 +19,10 @@ const DebtSchema = new mongoose.Schema({
     ref: 'Register',
     required: true,
   },
+  unit:{
+    type: Schema.Types.ObjectId,
+    ref:'Unit' 
+  },
   isVisible: { 
     type: Schema.Types.Boolean, 
     default: true 
