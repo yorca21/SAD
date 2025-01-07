@@ -1,7 +1,6 @@
 const PDFDocument = require('pdfkit');
 const path = require('path');
 
-
 const generatePDF = (data, title) => {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 30 });
@@ -13,7 +12,7 @@ const generatePDF = (data, title) => {
     doc.on('error', err => reject(err));
 
     const encabezado = path.join(__dirname, '../../assets/logo2.png');
-    doc.image(encabezado,0,0, { width: doc.page.width, height: 100});
+    doc.image(encabezado, 0, 0, { width: doc.page.width, height: 100 });
 
     doc.moveDown(6);
     // Título del reporte
@@ -21,8 +20,8 @@ const generatePDF = (data, title) => {
     doc.moveDown(2);
 
     // Definir los anchos de las columnas
-    const columnWidths = [200, 150, 100, 80, 100];  // Anchos de las columnas
-    const headers = ['Nombre', 'CI', 'Estado', 'Total Deuda'];
+    const columnWidths = [150, 100, 80, 100, 120]; // Ajustamos los anchos
+    const headers = ['Nombre', 'CI', 'Estado', 'Unidad', 'Total Deuda']; // Agregamos Unidad
 
     // Dibujar los encabezados de la tabla
     doc.fontSize(12);
@@ -37,7 +36,7 @@ const generatePDF = (data, title) => {
 
     // Dibujar la línea debajo de los encabezados
     doc.lineWidth(0.5).moveTo(30, currentY).lineTo(30 + columnWidths.reduce((a, b) => a + b, 0), currentY).stroke();
-    currentY += 10; // Dejar un pequeño espacio después de la línea
+    currentY += 10;
 
     // Dibujar los datos de cada deudor
     data.forEach(debtor => {
@@ -47,11 +46,18 @@ const generatePDF = (data, title) => {
 
       const totalDebtFormatted = !isNaN(totalDebt) ? totalDebt.toFixed(2) : '0.00';
 
+      // Extraemos la unidad (asumiendo que cada deuda tiene un campo 'unit')
+      const units = Array.isArray(debtor.debts)
+        ? debtor.debts.map(debt => debt.unit || 'N/A').join(', ')
+        : 'N/A';
+
       const rowData = [
         debtor.name || 'N/A',
         debtor.ci?.toString() || 'N/A',
         debtor.status || 'N/A',
-        `$${totalDebtFormatted}`
+        units,
+        `$${totalDebtFormatted}`,
+      
       ];
 
       rowData.forEach((data, index) => {
@@ -60,9 +66,9 @@ const generatePDF = (data, title) => {
       });
 
       // Dibujar la línea después de la fila de datos
-      currentY += 15; // Aumentar la posición Y para la siguiente fila
+      currentY += 15;
       doc.lineWidth(0.5).moveTo(30, currentY).lineTo(30 + columnWidths.reduce((a, b) => a + b, 0), currentY).stroke();
-      currentY += 10; // Dejar un pequeño espacio después de la línea
+      currentY += 10;
     });
 
     // Finalizar el documento

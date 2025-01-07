@@ -1,6 +1,6 @@
 const Debt = require('./debt.Schema');
 const Debtor = require('../newdebt/Register');
-const Unit = require('../../modules/unit/unit.schema')
+//const Unit = require('../../modules/unit/unit.schema')
 
 // Crear una nueva deuda asociada a un deudor
 const createDebt = async (debtorId, debtData) => {
@@ -38,12 +38,12 @@ const createDebt = async (debtorId, debtData) => {
 
 // Obtener una deuda por ID
 const getDebtById = async (debtId) => {
-  return await Debt.findById(debtId).populate('debtor').populate('unit');
+  return await Debt.findById(debtId).populate('debtor').populate('unit', 'name');
 };
 
 // Obtener todas las deudas visibles
 const getAllVisibleDebts = async () => {
-  return await Debt.find({ isVisible: true }).populate('debtor').populate('unit');
+  return await Debt.find({ isVisible: true }).populate('debtor').populate('unit', 'name');
 };
 
 // Eliminar una deuda

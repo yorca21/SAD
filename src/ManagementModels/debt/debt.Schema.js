@@ -16,7 +16,7 @@ const DebtSchema = new mongoose.Schema({
   },
   debtor: {
     type: Schema.Types.ObjectId,
-    ref: 'Register',
+    ref: 'Debtor',
     required: true,
   },
   unit:{
