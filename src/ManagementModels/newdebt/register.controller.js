@@ -1,4 +1,3 @@
-const { Error } = require('mongoose');
 const DebtQueries = require('../debt/debt.queries');
 const DebtorQueries = require('./register.queries');
 
@@ -6,8 +5,7 @@ const DebtorQueries = require('./register.queries');
 const createDebtor = async (req, res) => {
   try {
     const { name, ci, status, debts } = req.body;
-   // console.log("Datos recibidos en req.body:", req.body);
-
+   
     // Acceder al archivo subido
     const file = req.file;
     console.log("Archivo recibido:", req.file);
@@ -90,7 +88,6 @@ const searchDebtors = async (req, res) => {
 };
 // Controlador que actualiza al deudor
 const updateDebtor = async (req, res) => {
-  console.log(req.body)
   const { id } = req.params;
   const { name, ci, status, debts } = req.body;
 

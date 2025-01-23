@@ -18,10 +18,9 @@ const getDebtorsByCriteria = async ({ status, startDate, endDate }) => {
 
   try {
     // Buscar deudores con deudas y unidades asociadas
-    const debtors = await Debtor.find(query)
-      .populate({
+    const debtors = await Debtor.find(query).populate({
         path: 'debts',
-        select: 'amount unit', // Nos aseguramos de traer el campo 'unit'
+        select: 'amount unit', 
       });
 
     return debtors;

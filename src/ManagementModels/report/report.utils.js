@@ -6,7 +6,6 @@ const generatePDF = (data, title) => {
     const doc = new PDFDocument({ margin: 30 });
     const chunks = [];
 
-    // Capturar datos del PDF en un buffer
     doc.on('data', chunk => chunks.push(chunk));
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', err => reject(err));
@@ -15,15 +14,12 @@ const generatePDF = (data, title) => {
     doc.image(encabezado, 0, 0, { width: doc.page.width, height: 100 });
 
     doc.moveDown(6);
-    // Título del reporte
     doc.fontSize(18).text(title, { align: 'center', underline: true });
     doc.moveDown(2);
 
-    // Definir los anchos de las columnas
-    const columnWidths = [150, 100, 80, 100, 120]; // Ajustamos los anchos
-    const headers = ['Nombre', 'CI', 'Estado', 'Unidad', 'Total Deuda']; // Agregamos Unidad
+    const columnWidths = [150, 100, 80, 100, 120];
+    const headers = ['Nombre', 'CI', 'Estado', 'Unidad', 'Total Deuda'];
 
-    // Dibujar los encabezados de la tabla
     doc.fontSize(12);
     let currentY = doc.y;
     headers.forEach((header, index) => {
@@ -31,14 +27,10 @@ const generatePDF = (data, title) => {
       doc.text(header, xPos, currentY, { width: columnWidths[index], continued: false });
     });
 
-    // Mover a la siguiente línea después de los encabezados
     currentY += 15;
-
-    // Dibujar la línea debajo de los encabezados
     doc.lineWidth(0.5).moveTo(30, currentY).lineTo(30 + columnWidths.reduce((a, b) => a + b, 0), currentY).stroke();
     currentY += 10;
 
-    // Dibujar los datos de cada deudor
     data.forEach(debtor => {
       const totalDebt = Array.isArray(debtor.debts)
         ? debtor.debts.reduce((sum, debt) => sum + (typeof debt.amount === 'number' ? debt.amount : 0), 0)
@@ -46,32 +38,36 @@ const generatePDF = (data, title) => {
 
       const totalDebtFormatted = !isNaN(totalDebt) ? totalDebt.toFixed(2) : '0.00';
 
-      // Extraemos la unidad (asumiendo que cada deuda tiene un campo 'unit')
       const units = Array.isArray(debtor.debts)
-        ? debtor.debts.map(debt => debt.unit || 'N/A').join(', ')
+        ? debtor.debts
+            .filter(debt => debt && debt.unit)
+            .map(debt => debt.unit)
+            .join(', ') || 'N/A'
         : 'N/A';
+
+      console.log('Debtor:', debtor.name);
+      console.log('Units:', units);
 
       const rowData = [
         debtor.name || 'N/A',
         debtor.ci?.toString() || 'N/A',
         debtor.status || 'N/A',
-        units,
+        units || 'N/A',
         `$${totalDebtFormatted}`,
-      
       ];
 
       rowData.forEach((data, index) => {
         const xPos = 30 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
-        doc.text(data, xPos, currentY, { width: columnWidths[index], continued: false });
+        const cellWidth = columnWidths[index];
+        const truncatedData = data.length > 20 ? data.substring(0, 17) + '...' : data;
+        doc.text(truncatedData, xPos, currentY, { width: cellWidth, continued: false });
       });
 
-      // Dibujar la línea después de la fila de datos
       currentY += 15;
       doc.lineWidth(0.5).moveTo(30, currentY).lineTo(30 + columnWidths.reduce((a, b) => a + b, 0), currentY).stroke();
       currentY += 10;
     });
 
-    // Finalizar el documento
     doc.end();
   });
 };

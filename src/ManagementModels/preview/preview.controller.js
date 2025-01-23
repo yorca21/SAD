@@ -5,31 +5,31 @@ const Debtor = require('../newdebt/Register');
 const generateDebtorPDF = async (req, res) => {
     try {
         const { debtorId } = req.body;
-        // console.log('req body =>', debtorId);
 
-        // Validación del ID de deudor
         if (!debtorId) {
             return res.status(400).json({ error: "El ID del deudor es requerido." });
         }
 
-        // Obtener el deudor y las deudas asociadas
-        const debtor = await Debtor.findById(debtorId).populate('debts');
+        // Poblar deudas y sus unidades
+        const debtor = await Debtor.findById(debtorId)
+            .populate({
+                path: 'debts',
+                populate: {
+                    path: 'unit', // Poblar la unidad dentro de cada deuda
+                    select: 'name', // Solo extraer el campo `name`
+                },
+            });
 
         if (!debtor) {
             return res.status(404).json({ error: "Deudor no encontrado." });
         }
 
-        // Crear el documento PDF
         const doc = new PDFDocument();
-
-        // Configurar headers para transmitir el PDF
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `inline; filename=deudor_${debtor.ci}.pdf`);
 
-        // Enviar el PDF como flujo
         doc.pipe(res);
 
-        // Agregar logo
         const logoPath = path.join(__dirname, '../../assets/logo2.png');
         try {
             doc.image(logoPath, 0, 0, { width: doc.page.width, height: 100 });
@@ -38,62 +38,53 @@ const generateDebtorPDF = async (req, res) => {
         }
 
         doc.moveDown(6);
-
-        // Título del documento
-        doc.fontSize(20)
-            .text('Detalles del Deudor', { align: 'center' })
-            .moveDown();
-
-        // Información del deudor
+        doc.fontSize(20).text('Detalles del Deudor', { align: 'center' }).moveDown();
         doc.fontSize(14)
             .text(`Nombre: ${debtor.name}`)
             .text(`CI: ${debtor.ci}`)
-            .text(`Estado: ${debtor.status}`)
+            .text(`Estado: ${debtor.status === 'pending' ? 'Pendiente' : debtor.status === 'active' ? 'Activo' : 'Inactivo'}`)
+            .text(`Fecha de Registro: ${new Date(debtor.createdAt).toLocaleDateString()}`)
             .moveDown();
 
-        // Encabezados de la tabla de deudas
-        doc.fontSize(18)
-            .text('Deudas Asociadas', {  align: 'center', underline: true })
-            .moveDown();
+        doc.fontSize(18).text('Deudas Asociadas', { align: 'center', underline: true }).moveDown();
 
         const startX = 50;
         let startY = doc.y;
-        const columnWidth = [80, 150, 200, 100]; // Ancho de las columnas: N° Deuda, Monto, Descripción, Fecha
+        const columnWidth = [50, 80, 150, 150, 100]; // Columnas: N°, Fecha, Descripción, Unidad, Monto
 
-        // Dibujar encabezados de la tabla
+        // Encabezados de la tabla
         doc.fontSize(12)
-            .text('N° Deuda', startX, startY, { width: columnWidth[0], align: 'center' })
-            .text('Fecha', startX +columnWidth[0], startY, { width: columnWidth[1], align: 'center' })
+            .text('N°', startX, startY, { width: columnWidth[0], align: 'center' })
+            .text('Fecha', startX + columnWidth[0], startY, { width: columnWidth[1], align: 'center' })
             .text('Descripción', startX + columnWidth[0] + columnWidth[1], startY, { width: columnWidth[2], align: 'left' })
-            .text('Monto', startX + columnWidth[0] + columnWidth[1] + columnWidth[2], startY, { width: columnWidth[3], align: 'center' });
-        
-        //lineas separadoras 
+            .text('Unidad', startX + columnWidth[0] + columnWidth[1] + columnWidth[2], startY, { width: columnWidth[3], align: 'left' })
+            .text('Monto', startX + columnWidth[0] + columnWidth[1] + columnWidth[2] + columnWidth[3], startY, { width: columnWidth[4], align: 'center' });
+
         doc.moveTo(startX, startY + 15)
             .lineTo(startX + columnWidth.reduce((a, b) => a + b, 0), startY + 15)
             .stroke();
-        startY += 25; // Espacio debajo de los encabezados
+        startY += 25;
 
-        // Agregar deudas a la tabla
         if (debtor.debts && debtor.debts.length > 0) {
             debtor.debts.forEach((debt, index) => {
                 doc.fontSize(12)
-                    .text(`${index + 1}`, startX, startY, { width: columnWidth[0], align: 'center' }) // Columna de número
-                    .text(new Date(debt.recordDate).toLocaleDateString(), startX +  columnWidth[0], startY, { width: columnWidth[1], align: 'center' })
-                    .text(debt.description, startX + columnWidth[0] + columnWidth[1], startY, { width: columnWidth[2], align: 'left' }) // Columna de descripción
-                    .text(`${debt.amount.toFixed(2)}`, startX + columnWidth[0] + columnWidth[1] + columnWidth[2], startY, { width: columnWidth[3], align: 'center' });// Columna de monto;
+                    .text(`${index + 1}`, startX, startY, { width: columnWidth[0], align: 'center' })
+                    .text(new Date(debt.recordDate).toLocaleDateString(), startX + columnWidth[0], startY, { width: columnWidth[1], align: 'center' })
+                    .text(debt.description, startX + columnWidth[0] + columnWidth[1], startY, { width: columnWidth[2], align: 'left' })
+                    .text(debt.unit?.name || 'Sin Unidad', startX + columnWidth[0] + columnWidth[1] + columnWidth[2], startY, { width: columnWidth[3], align: 'left' })
+                    .text(debt.amount.toFixed(2), startX + columnWidth[0] + columnWidth[1] + columnWidth[2] + columnWidth[3], startY, { width: columnWidth[4], align: 'center' });
 
-                startY += 20; // Incrementar la posición Y para la siguiente fila
-                
-                if (startY > doc.page.height - 50) { // Verificar si queda espacio en la página
+                startY += 20;
+
+                if (startY > doc.page.height - 50) {
                     doc.addPage();
-                    startY = 50; // Reiniciar posición Y en la nueva página
+                    startY = 50;
                 }
             });
         } else {
             doc.fontSize(14).text('No tiene deudas registradas.', startX, startY + 10, { align: 'center' });
         }
 
-        // Finalizar el documento
         doc.end();
     } catch (error) {
         console.error('Error al generar el PDF:', error);

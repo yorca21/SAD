@@ -38,14 +38,42 @@ const createDebt = async (debtorId, debtData) => {
 
 // Obtener una deuda por ID
 const getDebtById = async (debtId) => {
-  return await Debt.findById(debtId).populate('debtor').populate('unit', 'name');
+ try {
+    return await Debt.findById(debtId)
+    .populate('debtor','name ci' )
+    .populate('unit', 'name');
+  }catch(error){
+    throw new Error (`error al obtener la deuda: ${error.message}`);
+  }
 };
 
 // Obtener todas las deudas visibles
 const getAllVisibleDebts = async () => {
-  return await Debt.find({ isVisible: true }).populate('debtor').populate('unit', 'name');
+  try {
+    return await Debt.find({ isVisible: true })
+    .populate('debtor','name ci')
+    .populate('unit', 'name');
+  }catch (error){
+    throw new Error(`Error al obtener las deudas: ${error.message}`);
+  }
 };
+// dar de baja la deuda 
+const desactivateDebt = async (debtId) =>{
+  try{
+    const debt = await Debt.findById(debtId);
+    if(!debt) {
+      throw new Error('Deuda no encontrada');
+    }
+    
+    debt.isVisible = false;
+    await debt.save();
+    return{ message: 'La deuda a sido dada de baja de manera exitosa.'};
 
+  }catch(error){
+    throw new Error(`Error al intentar procesar la solicitud: ${error.message}`);
+
+  }
+}
 // Eliminar una deuda
 const deleteDebt = async (debtId) => {
   const debt = await Debt.findById(debtId);
@@ -57,5 +85,6 @@ module.exports = {
   createDebt,
   getDebtById,
   getAllVisibleDebts,
+  desactivateDebt,
   deleteDebt,
 };

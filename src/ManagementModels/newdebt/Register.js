@@ -13,7 +13,7 @@ const DebtorSchema = new mongoose.Schema({
   },
   status: {
     type: Schema.Types.String,
-    enum: ['pending', 'active', 'deregistered'],
+    enum: ['pending', 'active', 'inactive'],
     default: 'pending',
   },
   file: {
