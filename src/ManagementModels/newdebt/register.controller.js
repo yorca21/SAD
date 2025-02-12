@@ -86,42 +86,75 @@ const searchDebtors = async (req, res) => {
     return res.status(500).json({ message: 'Error al buscar deudores', error: error.message });
   }
 };
+
 // Controlador que actualiza al deudor
-const updateDebtor = async (req, res) => {
+const updateDebtor = async (req, res) => { 
   const { id } = req.params;
   const { name, ci, status, debts } = req.body;
 
   try {
-      // Actualizar datos principales del deudor
-      const updatedDebtor = await DebtorQueries.updateDebtor(
-          id, 
-          { 
-            name, 
-            ci, 
-            status 
-          }
-      );
+      console.log('Datos recibidos:', req.body);
 
-      if (!updatedDebtor) {
+      // 1. Buscar el deudor en la base de datos
+      const existingDebtor = await DebtorQueries.getDebtorById(id);
+      if (!existingDebtor) {
           return res.status(404).json({ message: 'Deudor no encontrado' });
       }
 
-      // Si hay deudas, procesarlas
-      if (debts && debts.length) {
-          const newDebts = await Promise.all(
-              debts.map(debt => DebtQueries.createDebt(id, debt))
-          );
-          updatedDebtor.debts = newDebts.map(debt => debt._id);
-          await updatedDebtor.save();
+      // 2. Actualizar datos básicos del deudor
+      existingDebtor.name = name;
+      existingDebtor.ci = ci;
+      existingDebtor.status = status;
+
+      // 3. Manejo de deudas: Evitar duplicados antes de agregar nuevas deudas
+      if (debts && debts.length > 0) {
+          const existingDebtIds = existingDebtor.debts.map(debt => debt.toString()); // Convertimos los ObjectId a strings
+          
+          // Filtrar deudas nuevas que aún no están registradas
+          const newDebts = debts.filter(debt => !existingDebtIds.includes(debt._id));
+
+          if (newDebts.length > 0) {
+              const createdDebts = await Promise.all(
+                  newDebts.map(debt => DebtQueries.createDebt(id, debt))
+              );
+
+              // Agregar las nuevas deudas al array de deudas del deudor
+              existingDebtor.debts.push(...createdDebts.map(debt => debt._id));
+          }
       }
 
-      res.status(200).json({ message: 'Deudor actualizado exitosamente', debtor: updatedDebtor });
+      // 4. Guardar los cambios en la base de datos
+      await existingDebtor.save();
+
+      res.status(200).json({ message: 'Deudor actualizado exitosamente', debtor: existingDebtor });
   } catch (error) {
       console.error('Error actualizando el deudor:', error);
       res.status(500).json({ message: 'Error actualizando el deudor', error: error.message });
   }
 };
 
+// Controlador para desactivar deudor
+const deactivateDebtor = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const debtor = await DebtorQueries.getDebtorById(id);
+    if (!debtor) {
+      return res.status(404).json({ message: 'Deudor no encontrado.' });
+    }
+
+    // Cambiar el estado del deudor a inactivo
+    debtor.status = 'inactive';
+    await debtor.save();
+
+    // Manejo de la visibilidad de las deudas
+    await DebtQueries.updateDebtsVisibilityByDebtor(id, false);
+
+    return res.status(200).json({ message: 'El deudor y sus deudas fueron dados de baja exitosamente.' });
+  } catch (error) {
+    return res.status(500).json({ message: `Ha ocurrido un error al procesar la solicitud: ${error.message}` });
+  }
+};
 // Controlador para eliminar deudor 
 const deleteDebtor = async (req, res) => {
   try {
@@ -146,5 +179,6 @@ module.exports = {
   getDebtorById,
   searchDebtors,
   updateDebtor,
+  deactivateDebtor,
   deleteDebtor,
 };
