@@ -1,3 +1,4 @@
+const { generateVoucherIfNeeded } = require('../Proof/voucher.controller');
 const DebtQueries = require('./debt.queries');
 
 const createDebt = async (req, res) => {
@@ -53,6 +54,7 @@ const toggleDebtVisibility = async (req, res) => {
   try {
     const { id } = req.params;
     const { isVisible } = req.body;
+
     if (typeof isVisible !== 'boolean') {
       return res.status(400).json({ message: 'El campo "isVisible" debe ser booleano.' });
     }
@@ -62,15 +64,38 @@ const toggleDebtVisibility = async (req, res) => {
       return res.status(404).json({ message: 'Deuda no encontrada.' });
     }
 
-    res.status(200).json({
-      message: `Visibilidad de la deuda actualizada a: ${isVisible ? 'visible' : 'oculta'}.`,
-      debt: updatedDebt,
-    });
+    // Si la deuda se ha marcado como no visible (cancelada), generar comprobante
+    if (!isVisible) {
+      const debtorId = updatedDebt.debtor.toString();
+      const pdfBuffer = await generateVoucherIfNeeded(debtorId, 'deuda');
+
+      if (pdfBuffer) {
+        res.set({
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'inline; filename=boleta_pago.pdf',
+          'Content-Length': pdfBuffer.length,
+        });
+
+        return res.send(pdfBuffer);
+      }
+    }
+
+    return res.status(200).json({ message: 'Deuda actualizada.', debt: updatedDebt });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
-
+// desactivar una deuda de manera individual 
+const desactivateDebt = async(req, res) =>{
+  try{
+    const { id } = req.params;
+    const result = await DebtQueries.desactivateDebt(id);
+    return res.sta (200).json(result);
+  }catch(error) {
+    console.error('Error aldesactivar:', error.message);
+    return res.status(500).json({ error: error.message });
+  }
+};
 const deleteDebt = async (req, res) => {
   try {
     const { id } = req.params;
@@ -93,5 +118,6 @@ module.exports = {
   getDebtById,
   updateDebt,
   toggleDebtVisibility,
+  desactivateDebt,
   deleteDebt,
 };

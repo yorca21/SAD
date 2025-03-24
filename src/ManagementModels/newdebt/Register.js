@@ -16,6 +16,10 @@ const DebtorSchema = new mongoose.Schema({
     enum: ['pending', 'active', 'inactive'],
     default: 'pending',
   },
+  visible:{ 
+    type: Boolean,
+    default: true
+  },
   file: {
     type: Schema.Types.String,
   },

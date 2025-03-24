@@ -20,6 +20,7 @@ router.get('/:id', [authenticateToken, authorizeRoles(['super administrador', 'a
 // Ruta para actualizar un registro por su ID
 router.put('/:id', [authenticateToken, authorizeRoles(['super administrador', 'administrador'])], registerController.updateDebtor);
 
+router.put('/:id/status', [authenticateToken, authorizeRoles(['super administrador', 'administrador'])], registerController.updateDebtorStatus);
 // Ruta para eliminar un registro por su ID
 router.delete('/:id', [authenticateToken, authorizeRoles(['super administrador', 'administrador'])], registerController.deleteDebtor);
 

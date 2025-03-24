@@ -82,25 +82,39 @@ const updateDebtor = async (id, updateData) => {
       throw new Error(`Error actualizando el deudor: ${error.message}`);
   }
 };
-const deactivateDebtor = async (debtorId) => {
-  try{
+const updateDebtorStatus = async (debtorId, newStatus) => {
+  try {
     const debtor = await Debtor.findById(debtorId);
-    if(!debtor){
-      throw new Error('Deudor no encontrasdo.');
+    if (!debtor) {
+      console.log("updateDebtorStatus: Deudor no encontrado para el ID:", debtorId);
+      return null;
     }
-    //Cambiar el estado de activo a inactivo 
-    debtor.status = 'inactive';
-    await debtor.save();
-
-    // manejo de la visibilidad de las deudas 
-    await Debt.updateMany({debtor: debtorId}, {$set:{ isVisible: false}});
-
-    return {message:'El deudor y sus deudas fueron dados de baja esitosamente.'}
-
-  }catch(error){
-    throw new Error(`Ha ocurrido un error al procesar la solicitud: ${error.message} `);
+    console.log("updateDebtorStatus: Estado actual:", debtor.status, "y visible:", debtor.visible);
+    
+    // Actualizamos el estado y la visibilidad
+    debtor.status = newStatus;
+    // Si el nuevo estado es 'inactive', visible pasa a false; de lo contrario, true.
+    debtor.visible = newStatus !== 'inactive';
+    console.log("updateDebtorStatus: Actualizando deudor a estado:", newStatus, "y visible:", debtor.visible);
+    
+    const updatedDebtor = await debtor.save();
+    console.log("updateDebtorStatus: Deudor actualizado:", updatedDebtor);
+    return updatedDebtor;
+  } catch (error) {
+    throw new Error(`Error actualizando el estado del deudor: ${error.message}`);
   }
 };
+// visivilidad de las deudas 
+const visibilityDebtor = async(debtorId, visibility) =>{
+  try{
+    const result = await Debt.updateMany({debtor: debtorId}, {visible: visibility});
+    return result;
+
+  }catch(error){
+    throw new Error(`Error al actualizar la visibilidad : ${error.message}`);
+  }
+}
+
 // Eliminar un deudor
 const deleteDebtor = async (debtorId) => {
   return await Debtor.findByIdAndDelete(debtorId);
@@ -110,8 +124,9 @@ module.exports = {
   createDebtor,
   getAllDebtors,
   getDebtorById,
-  searchDebtors,
+  searchDebtors, 
   updateDebtor,
-  deactivateDebtor,
+  updateDebtorStatus,
+  visibilityDebtor,
   deleteDebtor,
 };

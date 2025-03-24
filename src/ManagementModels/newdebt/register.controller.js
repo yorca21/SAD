@@ -1,4 +1,5 @@
 const DebtQueries = require('../debt/debt.queries');
+const { generateVoucherIfNeeded } = require('../Proof/voucher.controller');
 const DebtorQueries = require('./register.queries');
 
 // Controlador para crear un nuevo deudor 
@@ -132,29 +133,47 @@ const updateDebtor = async (req, res) => {
       res.status(500).json({ message: 'Error actualizando el deudor', error: error.message });
   }
 };
-
-// Controlador para desactivar deudor
-const deactivateDebtor = async (req, res) => {
+// Controlador para actualizar el estado del deudor
+const updateDebtorStatus = async (req, res) => {
   try {
     const { id } = req.params;
+    const { status } = req.body; // Nuevo estado enviado desde el frontend
+
+    //console.log('parametros recibidos:', {id, status})
+
+    const estadosValidos = ['pending', 'active', 'inactive'];
+    if (!estadosValidos.includes(status)) {
+      console.log('Estado no valido recibido:', status);
+      return res.status(400).json({ message: 'Estado no válido.' });
+    }
 
     const debtor = await DebtorQueries.getDebtorById(id);
+   // console.log('deudor encontrado', debtor);
     if (!debtor) {
       return res.status(404).json({ message: 'Deudor no encontrado.' });
     }
+    //actualizacion de la visivilidad mediante la funcion
+    const updatedDetor  = await DebtorQueries.updateDebtorStatus(id, status);
+    
+    // generacion delk comprobante si el deudor oasa a un estado inactivo
+    if(status ==='inactive'){
 
-    // Cambiar el estado del deudor a inactivo
-    debtor.status = 'inactive';
-    await debtor.save();
-
-    // Manejo de la visibilidad de las deudas
-    await DebtQueries.updateDebtsVisibilityByDebtor(id, false);
-
-    return res.status(200).json({ message: 'El deudor y sus deudas fueron dados de baja exitosamente.' });
+      const pdfBuffer = await generateVoucherIfNeeded(id, 'deudor');
+      if(pdfBuffer){
+        res.set({
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'inline; filename=boleta_pago.pdf',
+          'Content-Length': pdfBuffer.length,   
+        });
+        return res.send(pdfBuffer)
+      }
+    }
+    return res.status(200).json({ message: `Estado actualizado a ${status}`, debtor:updatedDetor });
   } catch (error) {
-    return res.status(500).json({ message: `Ha ocurrido un error al procesar la solicitud: ${error.message}` });
+    return res.status(500).json({ message: `Error al actualizar estado: ${error.message}` });
   }
 };
+
 // Controlador para eliminar deudor 
 const deleteDebtor = async (req, res) => {
   try {
@@ -179,6 +198,6 @@ module.exports = {
   getDebtorById,
   searchDebtors,
   updateDebtor,
-  deactivateDebtor,
+  updateDebtorStatus,
   deleteDebtor,
 };

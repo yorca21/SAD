@@ -57,23 +57,31 @@ const getAllVisibleDebts = async () => {
     throw new Error(`Error al obtener las deudas: ${error.message}`);
   }
 };
-// dar de baja la deuda 
-const desactivateDebt = async (debtId) =>{
-  try{
+// Función para actualizar la visibilidad de todas las deudas asociadas a un deudor
+const debtsVisibility = async (debtorId, visibility) => {
+  try {
+    // Se actualizan todas las deudas cuyo campo 'debtor' coincida con el ID dado
+    const result = await Debt.updateMany({ debtor: debtorId }, { isVisible: visibility });
+    return result;
+  } catch (error) {
+    throw new Error(`Error al actualizar la visibilidad de las deudas: ${error.message}`);
+  }
+};
+// desactivar una deuda u ocultarla
+const desactivateDebt = async (debtId) => {
+  try {
     const debt = await Debt.findById(debtId);
-    if(!debt) {
+    if (!debt) {
       throw new Error('Deuda no encontrada');
     }
     
     debt.isVisible = false;
     await debt.save();
-    return{ message: 'La deuda a sido dada de baja de manera exitosa.'};
-
-  }catch(error){
+    return { message: 'La deuda ha sido dada de baja de manera exitosa.' };
+  } catch (error) {
     throw new Error(`Error al intentar procesar la solicitud: ${error.message}`);
-
   }
-}
+};
 // Eliminar una deuda
 const deleteDebt = async (debtId) => {
   const debt = await Debt.findById(debtId);
@@ -85,6 +93,7 @@ module.exports = {
   createDebt,
   getDebtById,
   getAllVisibleDebts,
+  debtsVisibility,
   desactivateDebt,
   deleteDebt,
 };
