@@ -4,9 +4,10 @@ const DebtorQueries = require('./register.queries');
 
 // Controlador para crear un nuevo deudor 
 const createDebtor = async (req, res) => {
+  console.log('BODY RECIBIDO:', req.body);
   try {
-    const { name, ci, status, debts } = req.body;
-   
+    const { name, paternalsurname, maternalsurname, ci, status, debts } = req.body;
+    console.log('BODY RECIBIDO:', req.body);
     // Acceder al archivo subido
     const file = req.file;
     console.log("Archivo recibido:", req.file);
@@ -14,6 +15,8 @@ const createDebtor = async (req, res) => {
     // Crear el nuevo deudor con la información recibida
     const debtorData = {
       name,
+      paternalsurname,
+      maternalsurname,
       ci,
       status,
       file: file ? file.path : null, // Guardar la ruta del archivo si fue subido
@@ -90,49 +93,81 @@ const searchDebtors = async (req, res) => {
 
 // Controlador que actualiza al deudor
 const updateDebtor = async (req, res) => { 
-  const { id } = req.params;
-  const { name, ci, status, debts } = req.body;
+  const debtorId = req.params.id;
+  const { debts, ...debtorUpdates } = req.body;
+  const file = req.file;
+
+  console.log('Id recibido:', debtorId);
+  console.log('DATA DEBTOR UPDATE:', debtorUpdates);
+  console.log('DEBTS:', debts);
+  
 
   try {
-      console.log('Datos recibidos:', req.body);
+    const existingDebtor = await DebtorQueries.getDebtorById(debtorId);
+    if (!existingDebtor) {
+      return res.status(400).json({ message: 'Deudor no encontrado' });
+    }
 
-      // 1. Buscar el deudor en la base de datos
-      const existingDebtor = await DebtorQueries.getDebtorById(id);
-      if (!existingDebtor) {
-          return res.status(404).json({ message: 'Deudor no encontrado' });
+    // Si hay nuevo archivo, usarlo. Si no, mantener el anterior
+    if (file) {
+      debtorUpdates.file = file.path;
+    } else {
+      debtorUpdates.file = existingDebtor.file;
+    } 
+
+    // Actualizamos datos generales del deudor (sin tocar deudas)
+    if (Object.keys(debtorUpdates).length > 0) {
+      await DebtorQueries.updateDebtor(debtorId, debtorUpdates);
+    }
+
+    let savedDebts = [];
+    if (Array.isArray(debts) && debts.length > 0) {
+      const existingDebts = existingDebtor.debts;
+
+      // Filtrar deudas nuevas que no existan aún
+      const newDebts = debts.filter(newDebt => {
+        // Si ya existe por ID, ignorar
+        if (newDebt._id && existingDebts.some(d => d._id.toString() === newDebt._id)) {
+          return false;
+        }
+
+        // Comparación por valores
+        const isDuplicate = existingDebts.some(existing => {
+          const existingDate = new Date(existing.recordDate);
+          const newDate = new Date(newDebt.recordDate);
+
+          const sameDay =
+            existingDate.getFullYear() === newDate.getFullYear() &&
+            existingDate.getMonth() === newDate.getMonth() &&
+            existingDate.getDate() === newDate.getDate();
+
+          return (
+            existing.description?.trim() === newDebt.description?.trim() &&
+            Number(existing.amount) === Number(newDebt.amount) &&
+            existing.unit?.toString() === newDebt.unit &&
+            sameDay
+          );
+        });
+
+        return !isDuplicate;
+      });
+
+      if (newDebts.length > 0) {
+        savedDebts = await DebtorQueries.createNewdebtsToDebtor(debtorId, newDebts);
       }
+    }
 
-      // 2. Actualizar datos básicos del deudor
-      existingDebtor.name = name;
-      existingDebtor.ci = ci;
-      existingDebtor.status = status;
+    return res.status(200).json({ 
+      message: 'Datos actualizados exitosamente', 
+      debts: savedDebts 
+    });
 
-      // 3. Manejo de deudas: Evitar duplicados antes de agregar nuevas deudas
-      if (debts && debts.length > 0) {
-          const existingDebtIds = existingDebtor.debts.map(debt => debt.toString()); // Convertimos los ObjectId a strings
-          
-          // Filtrar deudas nuevas que aún no están registradas
-          const newDebts = debts.filter(debt => !existingDebtIds.includes(debt._id));
-
-          if (newDebts.length > 0) {
-              const createdDebts = await Promise.all(
-                  newDebts.map(debt => DebtQueries.createDebt(id, debt))
-              );
-
-              // Agregar las nuevas deudas al array de deudas del deudor
-              existingDebtor.debts.push(...createdDebts.map(debt => debt._id));
-          }
-      }
-
-      // 4. Guardar los cambios en la base de datos
-      await existingDebtor.save();
-
-      res.status(200).json({ message: 'Deudor actualizado exitosamente', debtor: existingDebtor });
   } catch (error) {
-      console.error('Error actualizando el deudor:', error);
-      res.status(500).json({ message: 'Error actualizando el deudor', error: error.message });
+    console.error('Error actualizando el deudor:', error);
+    return res.status(500).json({ message: 'Error actualizando el deudor', error: error.message });
   }
 };
+
 // Controlador para actualizar el estado del deudor
 const updateDebtorStatus = async (req, res) => {
   try {

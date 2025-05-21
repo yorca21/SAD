@@ -1,7 +1,6 @@
 const { generatePaymentReceipt } = require('./proofofPayment');
 const Debtor = require('../newdebt/Register');
 
-// ✅ Genera manualmente el comprobante de pago (vía endpoint) usando Buffer
 const generateReceipt = async (req, res) => {
   const { debtorId } = req.params;
   const { debts } = req.body;
@@ -20,7 +19,6 @@ const generateReceipt = async (req, res) => {
 
     const paidDebts = debtor.debts.filter(d => debts.includes(String(d._id)));
 
-    // ✅ Genera el PDF en memoria como Buffer
     const pdfBuffer = await generatePaymentReceipt(debtor, paidDebts);
 
     // ✅ Enviamos el PDF al frontend para previsualización (no se guarda, no se descarga)
@@ -37,8 +35,8 @@ const generateReceipt = async (req, res) => {
   }
 };
 
-// ✅ Genera automáticamente el comprobante si corresponde (también con Buffer)
-const generateVoucherIfNeeded = async (debtorId, triggerType) => {
+// Genera automáticamente el comprobante si corresponde (también con Buffer)
+const generateVoucherIfNeeded = async (debtorId, triggerType, debtsToHide = []) => {
   const debtor = await Debtor.findById(debtorId)
     .populate({
       path: 'debts',
@@ -50,17 +48,21 @@ const generateVoucherIfNeeded = async (debtorId, triggerType) => {
 
   if (!debtor) throw new Error('Deudor no encontrado');
 
-  const visibleDebts = debtor.debts.filter(d => d.isVisible);
-
   // Comprobante automático al inactivar deudor
   if (triggerType === 'deudor' && debtor.status === 'inactive') {
     const pdfBuffer = await generatePaymentReceipt(debtor, debtor.debts);
     return pdfBuffer;
   }
 
-  // Comprobante automático cuando todas las deudas ya no son visibles
-  if (triggerType === 'deuda' && visibleDebts.length === 0) {
-    const pdfBuffer = await generatePaymentReceipt(debtor, debtor.debts);
+  // Comprobante automático cuando una o más deudas se ocultan
+  if (triggerType === 'deuda' && debtsToHide.length > 0) {
+    // Seleccionamos solo las deudas ocultadas
+    const paidDebts = debtor.debts.filter(debt => debtsToHide.includes(String(debt._id)));
+
+    if (paidDebts.length === 0) 
+      return null; // Si no hay deudas ocultas, no generamos comprobante
+
+    const pdfBuffer = await generatePaymentReceipt(debtor, paidDebts);
     return pdfBuffer;
   }
 

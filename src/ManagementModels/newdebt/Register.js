@@ -6,6 +6,14 @@ const DebtorSchema = new mongoose.Schema({
     type: Schema.Types.String,
     required: true,
   },
+  paternalsurname: {
+    type: Schema.Types.String,
+    required: true,
+  },
+  maternalsurname: {
+    type: Schema.Types.String,
+    required: true,
+  },
   ci: {
     type: Schema.Types.String,
     required: true,

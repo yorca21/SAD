@@ -11,6 +11,7 @@ const createDebt = async (debtorId, debtData) => {
       throw new Error('Datos incompletos para crear una deuda.');
     }
 
+    console.log(debtorId, '---', debtData)
     // Verificar si el deudor existe
     const debtorExists = await Debtor.findById(debtorId);
     if (!debtorExists) {
@@ -68,20 +69,21 @@ const debtsVisibility = async (debtorId, visibility) => {
   }
 };
 // desactivar una deuda u ocultarla
-const desactivateDebt = async (debtId) => {
+const updateDebtVisibility = async (debtId, isVisible) => {
   try {
     const debt = await Debt.findById(debtId);
     if (!debt) {
       throw new Error('Deuda no encontrada');
     }
-    
-    debt.isVisible = false;
+
+    debt.isVisible = isVisible; // Actualiza según el valor recibido
     await debt.save();
-    return { message: 'La deuda ha sido dada de baja de manera exitosa.' };
+    return debt;
   } catch (error) {
-    throw new Error(`Error al intentar procesar la solicitud: ${error.message}`);
+    throw new Error(`Error al actualizar la visibilidad de la deuda: ${error.message}`);
   }
 };
+
 // Eliminar una deuda
 const deleteDebt = async (debtId) => {
   const debt = await Debt.findById(debtId);
@@ -94,6 +96,6 @@ module.exports = {
   getDebtById,
   getAllVisibleDebts,
   debtsVisibility,
-  desactivateDebt,
+  updateDebtVisibility,
   deleteDebt,
 };

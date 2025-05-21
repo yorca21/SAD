@@ -28,11 +28,6 @@ const userSchema = new mongoose.Schema({
         ref: 'Role',
         require: true
     }],
-    permissions:[{
-        type: Schema.Types.ObjectId,
-        ref: 'Permission',
-        require: true
-    }],
     unit:{
         type:Schema.Types.ObjectId,
         ref: 'Unit',

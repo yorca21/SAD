@@ -1,5 +1,6 @@
 const Debtor = require('./Register');
 const Debt = require('../debt/debt.Schema')
+const mongoose = require('mongoose');
 
 // Crear un nuevo deudor
 const createDebtor = async (debtorData) => {
@@ -113,7 +114,51 @@ const visibilityDebtor = async(debtorId, visibility) =>{
   }catch(error){
     throw new Error(`Error al actualizar la visibilidad : ${error.message}`);
   }
-}
+};
+const createNewdebtsToDebtor = async (debtorId, debtDataArray) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(debtorId)) {
+      console.log('id recibido no valido', debtorId);
+      throw new Error('ID de deudor no válido');
+    }
+
+    const objectId = new mongoose.Types.ObjectId(debtorId);
+
+    const debtor = await Debtor.findById(objectId);
+    if (!debtor) {
+      throw new Error('Deudor no encontrado');
+    }
+
+    if (!Array.isArray(debtDataArray) || debtDataArray.length === 0) {
+      throw new Error('No se proporcionaron deudas válidas para registrar');
+    }
+
+    const newDebt = debtDataArray.map(debt => ({
+      ...debt,
+      debtor: objectId,
+    }));
+
+    const savedDebt = await Debt.insertMany(newDebt);
+    const newDebtIds = savedDebt.map(debt => debt._id);
+    debtor.debts.push(...newDebtIds);
+
+    await debtor.save();
+
+    return savedDebt;
+  } catch (error) {
+    throw new Error(`error al crear y asignar la deuda: ${error.message}`);
+  }
+};
+// obtener ids de las deudas asociados a un  deudor
+const getDebtIdsByDebtorId = async (debtorId) => {
+  try {
+    const debtor = await Debtor.findById(debtorId).select('debts');
+    if (!debtor) throw new Error('Deudor no encontrado');
+    return debtor.debts.map(debt => debt.toString());
+  } catch (error) {
+    throw new Error(`Error al obtener deudas del deudor: ${error.message}`);
+  }
+};
 
 // Eliminar un deudor
 const deleteDebtor = async (debtorId) => {
@@ -128,5 +173,7 @@ module.exports = {
   updateDebtor,
   updateDebtorStatus,
   visibilityDebtor,
+  createNewdebtsToDebtor,
+  getDebtIdsByDebtorId,
   deleteDebtor,
 };

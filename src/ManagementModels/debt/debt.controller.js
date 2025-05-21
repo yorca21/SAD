@@ -2,10 +2,17 @@ const { generateVoucherIfNeeded } = require('../Proof/voucher.controller');
 const DebtQueries = require('./debt.queries');
 
 const createDebt = async (req, res) => {
+  console.log('BODY RECIBIDO:', req.body);
+  console.log('Archivos recibidos', req.file);
   try {
     const debtorId = req.params.debtorId;
+    console.log('detor id', debtorId);
     if(!debtorId){
       return res.status(400).json({message:'El id del deudor es requerido.'});
+    }
+    // agregamos el file a la deuda
+    if(req.file){
+      req.body.filePath = req.file.path
     }
     const newDebt = await DebtQueries.createDebt(debtorId, req.body);
     return res.status(201).json({
@@ -59,15 +66,16 @@ const toggleDebtVisibility = async (req, res) => {
       return res.status(400).json({ message: 'El campo "isVisible" debe ser booleano.' });
     }
 
-    const updatedDebt = await DebtQueries.updateDebt(id, { isVisible });
+    const updatedDebt = await DebtQueries.updateDebtVisibility(id, isVisible);
     if (!updatedDebt) {
       return res.status(404).json({ message: 'Deuda no encontrada.' });
     }
 
-    // Si la deuda se ha marcado como no visible (cancelada), generar comprobante
     if (!isVisible) {
       const debtorId = updatedDebt.debtor.toString();
-      const pdfBuffer = await generateVoucherIfNeeded(debtorId, 'deuda');
+      const pdfBuffer = await generateVoucherIfNeeded(debtorId, 'deuda',[id]);
+
+      console.log('PDF generado:', pdfBuffer ? 'Sí' : 'No');
 
       if (pdfBuffer) {
         res.set({
@@ -82,20 +90,11 @@ const toggleDebtVisibility = async (req, res) => {
 
     return res.status(200).json({ message: 'Deuda actualizada.', debt: updatedDebt });
   } catch (error) {
+    console.error('Error en toggleDebtVisibility:', error);
     return res.status(500).json({ error: error.message });
   }
 };
-// desactivar una deuda de manera individual 
-const desactivateDebt = async(req, res) =>{
-  try{
-    const { id } = req.params;
-    const result = await DebtQueries.desactivateDebt(id);
-    return res.sta (200).json(result);
-  }catch(error) {
-    console.error('Error aldesactivar:', error.message);
-    return res.status(500).json({ error: error.message });
-  }
-};
+
 const deleteDebt = async (req, res) => {
   try {
     const { id } = req.params;
@@ -118,6 +117,5 @@ module.exports = {
   getDebtById,
   updateDebt,
   toggleDebtVisibility,
-  desactivateDebt,
   deleteDebt,
 };
